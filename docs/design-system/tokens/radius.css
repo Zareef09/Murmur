@@ -1,0 +1,14 @@
+/* Softness in the geometry. Nothing sharper than 8px anywhere in the product. */
+:root {
+  --radius-xs: 8px;
+  --radius-sm: 12px;
+  --radius-md: 16px;
+  --radius-lg: 22px;   /* cards, rows */
+  --radius-xl: 28px;   /* sheets, modals */
+  --radius-2xl: 36px;  /* full-screen panels */
+  --radius-pill: 999px;
+  --radius-icon: 24%; /* @kind radius */  /* iOS squircle approximation for the app icon */
+
+  --stroke-hairline: 1px;
+  --stroke-focus: 2px;
+}

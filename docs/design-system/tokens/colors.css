@@ -1,0 +1,130 @@
+/* ── Murmur color ────────────────────────────────────────────────────────────
+   Warmth lives in the neutrals. One accent (Ember) = the warm light source,
+   reserved for the listening state and primary actions. Reminder and Event get
+   their own hues so they read apart at a glance — always paired with icon+label,
+   never color alone. */
+
+:root {
+  /* Base ramp — Sand (warm neutral, no blue in it anywhere) */
+  --sand-0:   #FFFDFA;
+  --sand-50:  #FAF6EF;
+  --sand-100: #F3EDE3;
+  --sand-200: #E8E0D3;
+  --sand-300: #D8CEBE;
+  --sand-400: #B9AE9C;
+  --sand-500: #948977;
+  --sand-600: #6E6455;
+  --sand-700: #4C4438;
+  --sand-800: #332D25;
+  --sand-900: #211D18;
+  --sand-950: #17140F;
+  --sand-1000:#100E0B;
+
+  /* Base ramp — Ember (the single accent: a warm light source) */
+  --ember-100: #FBEEDF;
+  --ember-200: #F6D9B8;
+  --ember-300: #EFBE8B;
+  --ember-400: #E5A063;
+  --ember-500: #D2803A;
+  --ember-600: #B4602A;
+  --ember-700: #98481D;
+  --ember-800: #77361A;
+
+  /* Base ramps — destination hues (warm-leaning, harmonious with Ember) */
+  --moss-300:  #BFC79A;   /* Reminder */
+  --moss-400:  #9BA778;
+  --moss-600:  #6C7A4E;
+  --moss-700:  #55603C;
+  --plum-300:  #D9AEBA;   /* Calendar event */
+  --plum-400:  #C08E9D;
+  --plum-600:  #8E5F6E;
+  --plum-700:  #714A57;
+
+  /* Base ramps — semantic */
+  --leaf-400: #9FBE93;
+  --leaf-600: #5E7A55;
+  --clay-400: #E0907C;
+  --clay-600: #A8503F;
+
+  /* ── Semantic aliases: LIGHT (default) ─────────────────────────────────── */
+  --bg-base:      var(--sand-50);    /* the page: linen, never stark white */
+  --bg-sunk:      var(--sand-100);   /* wells, grouped-list backdrops */
+  --bg-raised:    var(--sand-0);     /* cards, sheets, rows */
+  --bg-overlay:   rgba(33, 29, 24, .28);
+  --bg-scrim:     rgba(250, 246, 239, .72);
+
+  --text-primary:   var(--sand-900);
+  --text-secondary: var(--sand-600);
+  --text-tertiary:  var(--sand-500);
+  --text-inverse:   var(--sand-50);
+  --text-accent:    var(--ember-700);
+
+  --line-hairline: rgba(33, 29, 24, .07);
+  --line-soft:     rgba(33, 29, 24, .12);
+  --line-strong:   rgba(33, 29, 24, .22);
+
+  --accent:            var(--ember-600);
+  --accent-hover:      var(--ember-700);
+  --accent-press:      var(--ember-800);
+  --accent-quiet:      var(--ember-100);
+  --accent-on:         var(--sand-0);
+  --accent-glow:       rgba(210, 128, 58, .34);
+  --accent-glow-faint: rgba(210, 128, 58, .12);
+
+  --reminder-fg:    var(--moss-700);
+  --reminder-bg:    #EDEFE0;
+  --reminder-line:  rgba(108, 122, 78, .28);
+  --event-fg:       var(--plum-700);
+  --event-bg:       #F5E7EA;
+  --event-line:     rgba(142, 95, 110, .26);
+
+  --success-fg: #4A6642;
+  --success-bg: #E7EFE2;
+  --attention-fg: var(--clay-600);
+  --attention-bg: #F8E5DF;
+
+  color-scheme: light;
+}
+
+/* ── Semantic aliases: DARK ─────────────────────────────────────────────────
+   Near-black with a warm undertone. Not pure black, not cold charcoal.
+   The accent glows rather than shouts. */
+:root[data-theme="dark"] {
+  --bg-base:    var(--sand-1000);
+  --bg-sunk:    #0B0A08;
+  --bg-raised:  #1D1913;
+  --bg-overlay: rgba(9, 8, 6, .58);
+  --bg-scrim:   rgba(16, 14, 11, .74);
+
+  --text-primary:   #F2EBDF;
+  --text-secondary: #A9A08F;
+  --text-tertiary:  #7C7365;
+  --text-inverse:   var(--sand-950);
+  --text-accent:    var(--ember-300);
+
+  --line-hairline: rgba(242, 235, 223, .07);
+  --line-soft:     rgba(242, 235, 223, .13);
+  --line-strong:   rgba(242, 235, 223, .26);
+
+  --accent:            var(--ember-400);
+  --accent-hover:      var(--ember-300);
+  --accent-press:      var(--ember-500);
+  --accent-quiet:      rgba(229, 160, 99, .14);
+  --accent-on:         #241608;
+  --accent-glow:       rgba(239, 190, 139, .40);
+  --accent-glow-faint: rgba(239, 190, 139, .13);
+
+  --reminder-fg:   var(--moss-300);
+  --reminder-bg:   rgba(155, 167, 120, .15);
+  --reminder-line: rgba(191, 199, 154, .30);
+  --event-fg:      var(--plum-300);
+  --event-bg:      rgba(192, 142, 157, .15);
+  --event-line:    rgba(217, 174, 186, .28);
+
+  --success-fg: var(--leaf-400);
+  --success-bg: rgba(159, 190, 147, .14);
+  --attention-fg: var(--clay-400);
+  --attention-bg: rgba(224, 144, 124, .15);
+
+  color-scheme: dark;
+}

@@ -1,0 +1,27 @@
+/* 4px base. Murmur leans on the top of this scale — air is the brand. */
+:root {
+  --space-1: 2px;
+  --space-2: 4px;
+  --space-3: 8px;
+  --space-4: 12px;
+  --space-5: 16px;
+  --space-6: 20px;
+  --space-7: 24px;
+  --space-8: 32px;
+  --space-9: 40px;
+  --space-10: 56px;
+  --space-11: 80px;
+  --space-12: 120px;
+
+  --gutter-screen: var(--space-7);   /* standard iOS side margin for Murmur */
+  --gutter-sheet:  var(--space-7);
+  --stack-tight:   var(--space-3);
+  --stack-default: var(--space-5);
+  --stack-loose:   var(--space-8);
+  --stack-section: var(--space-10);
+
+  /* Touch: never smaller than this. One-handed, in motion. */
+  --hit-min: 44px;
+  --hit-comfort: 56px;
+  --hit-hero: 96px;
+}

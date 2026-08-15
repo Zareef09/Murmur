@@ -1,0 +1,32 @@
+<!-- @dsCard group="Components" viewport="700x330" name="Fields & toggles" subtitle="Tap-to-edit values, destination toggle, settings row" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><link rel="stylesheet" href="../../styles.css">
+<script>window.MURMUR_ICON_BASE='../../assets/icons'</script>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>body{margin:0;padding:20px 22px;background:var(--bg-base);color:var(--text-primary);font:var(--type-body)}.lbl{font:var(--type-meta);font-size:10px;color:var(--text-tertiary);margin-bottom:8px}.row{display:flex;gap:14px;align-items:center;flex-wrap:wrap}</style></head><body><div id="root"></div><script type="text/babel">
+const NS = window.MurmurDesignSystem_545ca7;
+
+const { EditableField, DestinationToggle, ToggleRow } = NS;
+function Card() {
+  const [dest, setDest] = React.useState('event');
+  const [on, setOn] = React.useState(true);
+  const [title, setTitle] = React.useState('Coffee with Ana');
+  return (
+    <div style={{display:'flex',flexDirection:'column',gap:14}}>
+      <div style={{background:'var(--bg-raised)',borderRadius:'var(--radius-lg)',border:'1px solid var(--line-hairline)',padding:6}}>
+        <EditableField label="Title" icon="pencil" value={title} onChange={setTitle} editing />
+        <EditableField label="When" icon="clock" value="Tomorrow, 5:00 PM" />
+        <EditableField label="When" icon="clock" value="" placeholder="No date" />
+      </div>
+      <DestinationToggle value={dest} onChange={setDest} />
+      <div style={{background:'var(--bg-raised)',borderRadius:'var(--radius-lg)',border:'1px solid var(--line-hairline)'}}>
+        <ToggleRow label="Always confirm before saving" description="Glance at what Murmur heard before it saves." checked={on} onChange={setOn} />
+        <ToggleRow label="Speak questions aloud" checked={false} onChange={() => {}} divider={false} />
+      </div>
+    </div>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<Card />);
+</script></body></html>

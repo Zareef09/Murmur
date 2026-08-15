@@ -1,0 +1,14 @@
+/* Murmur type families.
+   NOTE: no licensed binaries were supplied with the brief, so both families are
+   loaded from Google Fonts. Drop real .woff2 files into assets/fonts/ and swap the
+   @import for @font-face rules if the brand later licenses its own cut. */
+@import url("https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,200..700;1,200..700&family=IBM+Plex+Mono:wght@300;400&display=swap");
+
+:root {
+  /* Core UI + display voice: humanist grotesque, soft terminals, superb light weights */
+  --font-core: "Hanken Grotesk", ui-sans-serif, -apple-system, system-ui, sans-serif;
+  /* Meta voice: timestamps, durations, permission keys. Used at small sizes only. */
+  --font-meta: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  /* Native fallback stack for anything that must match SwiftUI defaults exactly */
+  --font-system: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+}

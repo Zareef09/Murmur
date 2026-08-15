@@ -1,0 +1,39 @@
+/* Murmur type scale. iOS body sits at 17px; everything else is tuned around it.
+   Display sizes run light (200–300); anything under 17px runs 400–500 so it
+   survives one-handed, mid-motion glancing. Never below 12px. */
+:root {
+  --size-display:  40px;  --lh-display:  1.06; /* @kind other */  --ls-display:  -0.022em; /* @kind other */
+  --size-title:    30px;  --lh-title:    1.14; /* @kind other */  --ls-title:    -0.018em; /* @kind other */
+  --size-headline: 22px;  --lh-headline: 1.24; /* @kind other */  --ls-headline: -0.012em; /* @kind other */
+  --size-body:     17px;  --lh-body:     1.45; /* @kind other */  --ls-body:     -0.004em; /* @kind other */
+  --size-callout:  16px;  --lh-callout:  1.42; /* @kind other */  --ls-callout:   0em; /* @kind other */
+  --size-subhead:  15px;  --lh-subhead:  1.38; /* @kind other */  --ls-subhead:   0em; /* @kind other */
+  --size-footnote: 13px;  --lh-footnote: 1.36; /* @kind other */  --ls-footnote:  0.004em; /* @kind other */
+  --size-caption:  12px;  --lh-caption:  1.32; /* @kind other */  --ls-caption:   0.02em; /* @kind other */
+
+  --weight-hairline: 200;
+  --weight-light:    300;
+  --weight-regular:  400;
+  --weight-medium:   500;
+  --weight-semibold: 600;
+
+  /* Composed roles */
+  --type-display:  var(--weight-hairline) var(--size-display)/var(--lh-display) var(--font-core);
+  --type-title:    var(--weight-light) var(--size-title)/var(--lh-title) var(--font-core);
+  --type-headline: var(--weight-regular) var(--size-headline)/var(--lh-headline) var(--font-core);
+  --type-body:     var(--weight-regular) var(--size-body)/var(--lh-body) var(--font-core);
+  --type-body-em:  var(--weight-medium) var(--size-body)/var(--lh-body) var(--font-core);
+  --type-callout:  var(--weight-regular) var(--size-callout)/var(--lh-callout) var(--font-core);
+  --type-subhead:  var(--weight-medium) var(--size-subhead)/var(--lh-subhead) var(--font-core);
+  --type-footnote: var(--weight-regular) var(--size-footnote)/var(--lh-footnote) var(--font-core);
+  --type-caption:  var(--weight-medium) var(--size-caption)/var(--lh-caption) var(--font-core);
+  --type-meta:     var(--weight-regular) var(--size-footnote)/var(--lh-footnote) var(--font-meta);
+
+  /* Transcript: the words the user just spoke, set large and light */
+  --type-transcript: var(--weight-light) 26px/1.32 var(--font-core);
+  --ls-transcript: -0.014em; /* @kind other */
+
+  /* Wordmark */
+  --type-wordmark: var(--weight-light) 28px/1 var(--font-core);
+  --ls-wordmark: 0.13em; /* @kind other */
+}

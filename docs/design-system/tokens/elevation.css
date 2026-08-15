@@ -1,0 +1,20 @@
+/* Depth comes from layered warm surfaces and hairlines first, shadow second.
+   Shadows are warm-tinted, wide, and very low opacity — light through linen,
+   never a drama shadow. Never stack two. */
+:root {
+  --shadow-none: none;
+  --shadow-row:   0 1px 2px rgba(58, 45, 30, .04);
+  --shadow-card:  0 2px 10px rgba(58, 45, 30, .05);
+  --shadow-sheet: 0 -8px 40px rgba(45, 34, 22, .10);
+  --shadow-lift:  0 8px 28px rgba(45, 34, 22, .09);
+  /* The only "glow" in the system: the capture element while listening */
+  --shadow-listening: 0 0 64px var(--accent-glow), 0 0 140px var(--accent-glow-faint);
+
+  --blur-scrim: saturate(115%) blur(20px); /* @kind other */
+}
+:root[data-theme="dark"] {
+  --shadow-row:   0 1px 2px rgba(0, 0, 0, .32);
+  --shadow-card:  0 2px 12px rgba(0, 0, 0, .38);
+  --shadow-sheet: 0 -8px 44px rgba(0, 0, 0, .52);
+  --shadow-lift:  0 10px 32px rgba(0, 0, 0, .46);
+}

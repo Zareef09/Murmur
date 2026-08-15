@@ -1,0 +1,38 @@
+<!-- @dsCard group="Motion" viewport="1160x330" name="Motion storyboard — the three key moments" subtitle="idle→listening, listening→thinking→done, and the confirmation appearing" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><link rel="stylesheet" href="../styles.css">
+<style>
+body{margin:0;padding:24px;background:var(--bg-base);color:var(--text-primary);font:var(--type-body)}
+.seq{display:flex;flex-direction:column;gap:18px}
+.row{display:grid;grid-template-columns:150px repeat(4,1fr);gap:14px;align-items:center}
+.name{font:var(--type-subhead)}
+.name em{display:block;font:var(--type-meta);font-size:10px;color:var(--text-tertiary);font-style:normal;margin-top:4px}
+.f{background:var(--bg-raised);border:1px solid var(--line-hairline);border-radius:var(--radius-md);padding:12px;height:76px;display:flex;flex-direction:column;justify-content:space-between}
+.f b{font:var(--type-caption);color:var(--text-primary)}
+.f s{font:var(--type-meta);font-size:10px;color:var(--text-tertiary);text-decoration:none}
+.bar{height:4px;border-radius:99px;background:var(--line-soft);position:relative;overflow:hidden}
+.bar i{position:absolute;inset:0 auto 0 0;background:var(--accent);border-radius:99px}
+</style></head><body>
+<div class="seq">
+  <div class="row">
+    <div class="name">Idle → Listening<em>620ms · --ease-exhale</em></div>
+    <div class="f"><b>0ms · tap</b><s>Core dips 4%, haptic .soft</s><div class="bar"><i style="width:8%"></i></div></div>
+    <div class="f"><b>0–180ms</b><s>Breath loop stops mid-cycle, no snap back</s><div class="bar"><i style="width:30%"></i></div></div>
+    <div class="f"><b>180–460ms</b><s>Bloom opens to 1.28×, rings brighten in 0/90/180ms sequence</s><div class="bar"><i style="width:72%"></i></div></div>
+    <div class="f"><b>460–620ms</b><s>Transcript placeholder rises 8px into place</s><div class="bar"><i style="width:100%"></i></div></div>
+  </div>
+  <div class="row">
+    <div class="name">Listening → Thinking → Done<em>620ms + hold + 620ms · one continuous morph</em></div>
+    <div class="f"><b>Release</b><s>Bloom contracts to 0.74×, rings dim to 20%</s><div class="bar"><i style="width:20%"></i></div></div>
+    <div class="f"><b>Thinking</b><s>Single arc drifts the rim at 2.6s/turn; transcript holds, does not clear</s><div class="bar"><i style="width:52%"></i></div></div>
+    <div class="f"><b>Resolve</b><s>Arc fades, core fills and settles at 1.14× on --ease-settle</s><div class="bar"><i style="width:80%"></i></div></div>
+    <div class="f"><b>+120ms</b><s>Check fades up inside the core. No confetti, no sound beyond one soft tick</s><div class="bar"><i style="width:100%"></i></div></div>
+  </div>
+  <div class="row">
+    <div class="name">Confirmation appearing<em>380ms · --ease-exhale</em></div>
+    <div class="f"><b>0ms</b><s>Capture screen dims 8% and scales to 0.985</s><div class="bar"><i style="width:14%"></i></div></div>
+    <div class="f"><b>0–380ms</b><s>Sheet rises 40px with --shadow-sheet, radius 28px</s><div class="bar"><i style="width:62%"></i></div></div>
+    <div class="f"><b>+80ms stagger</b><s>Fields fade in top-down, 40ms apart</s><div class="bar"><i style="width:86%"></i></div></div>
+    <div class="f"><b>Dismiss</b><s>Sheet exits down over 300ms; SuccessBar takes its place, leaves after 5s</s><div class="bar"><i style="width:100%"></i></div></div>
+  </div>
+</div>
+</body></html>

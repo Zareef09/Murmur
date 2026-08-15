@@ -1,0 +1,45 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Murmur — every screen, both modes</title>
+<link rel="stylesheet" href="../../styles.css">
+<style>
+body{margin:0;padding:36px 40px 60px;background:var(--bg-sunk);color:var(--text-primary);font:var(--type-body)}
+h1{font:var(--type-title);letter-spacing:var(--ls-title);margin:0 0 6px}
+p.sub{margin:0 0 30px;font:var(--type-callout);color:var(--text-secondary)}
+h2{font:var(--type-caption);text-transform:uppercase;letter-spacing:.08em;color:var(--text-tertiary);margin:34px 0 14px}
+.row{display:flex;gap:26px;flex-wrap:wrap}
+.cell{display:flex;flex-direction:column;gap:9px}
+.cell span{font:var(--type-footnote);color:var(--text-secondary)}
+iframe{width:393px;height:852px;border:none;border-radius:54px;box-shadow:var(--shadow-card);background:var(--bg-base)}
+.pair{display:flex;gap:14px}
+</style></head><body>
+<h1>Every screen, light and dark</h1>
+<p class="sub">Each pair is the same state in both modes. Live frames, not screenshots — tap into any of them.</p>
+<div id="out"></div>
+<script>
+const GROUPS = [
+  ['Onboarding', [['onboarding-1','What it does'],['onboarding-2','Permissions, framed by why'],['onboarding-3','Hands-free setup']]],
+  ['Home Screen', [['springboard','App icon in place']]],
+  ['Capture', [['capture-first-run','First run'],['capture-idle','Idle'],['capture-listening','Listening'],['capture-thinking','Processing'],['capture-success','Success + Undo']]],
+  ['Confirmation', [['confirm','Confident case'],['confirm-editing','Correcting a field']]],
+  ['Clarification', [['clarify','Listening for the answer'],['clarify-answered','Answer received']]],
+  ['History', [['history','Populated'],['history-empty','Empty']]],
+  ['Settings', [['settings','Preferences & permissions']]],
+];
+const out = document.getElementById('out');
+for (const [group, items] of GROUPS) {
+  const h = document.createElement('h2'); h.textContent = group; out.appendChild(h);
+  const row = document.createElement('div'); row.className = 'row';
+  for (const [screen, label] of items) {
+    const cell = document.createElement('div'); cell.className = 'cell';
+    const s = document.createElement('span'); s.textContent = label;
+    const pair = document.createElement('div'); pair.className = 'pair';
+    for (const theme of ['light', 'dark']) {
+      const f = document.createElement('iframe');
+      f.loading = 'lazy';
+      f.src = `index.html?chrome=0&screen=${screen}&theme=${theme}`;
+      pair.appendChild(f);
+    }
+    cell.append(s, pair); row.appendChild(cell);
+  }
+  out.appendChild(row);
+}
+</script></body></html>

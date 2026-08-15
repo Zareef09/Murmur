@@ -1,0 +1,34 @@
+<!-- @dsCard group="Components" viewport="700x340" name="Rows, badges, empty states" subtitle="History row, destination badge, permission row, empty state" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><link rel="stylesheet" href="../../styles.css">
+<script>window.MURMUR_ICON_BASE='../../assets/icons'</script>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>body{margin:0;padding:20px 22px;background:var(--bg-base);color:var(--text-primary);font:var(--type-body)}.lbl{font:var(--type-meta);font-size:10px;color:var(--text-tertiary);margin-bottom:8px}.row{display:flex;gap:14px;align-items:center;flex-wrap:wrap}</style></head><body><div id="root"></div><script type="text/babel">
+const NS = window.MurmurDesignSystem_545ca7;
+
+const { HistoryRow, DestinationBadge, PermissionRow, EmptyState, Button } = NS;
+function Card() {
+  const [swiped, setSwiped] = React.useState(false);
+  return (
+    <div style={{display:'flex',gap:18}}>
+      <div style={{flex:1,display:'flex',flexDirection:'column',gap:12}}>
+        <div className="row"><DestinationBadge destination="reminder" /><DestinationBadge destination="event" /><DestinationBadge destination="reminder" variant="glyph" /><DestinationBadge destination="event" variant="glyph" /></div>
+        <div style={{background:'var(--bg-raised)',borderRadius:'var(--radius-lg)',overflow:'hidden',border:'1px solid var(--line-hairline)'}}>
+          <HistoryRow title="Call mom" destination="reminder" when="Tomorrow, 5:00 PM" relative="2h ago" />
+          <HistoryRow title="Coffee with Ana" destination="event" when="Fri, 9:30 AM" relative="Yesterday" swiped={swiped} onPress={() => setSwiped(true)} onSwipe={() => setSwiped(false)} divider={false} />
+        </div>
+        <div style={{background:'var(--bg-raised)',borderRadius:'var(--radius-lg)',overflow:'hidden',border:'1px solid var(--line-hairline)'}}>
+          <PermissionRow label="Microphone" status="granted" />
+          <PermissionRow label="Calendar" status="needed" hint="Needed to save events" onFix={() => {}} divider={false} />
+        </div>
+      </div>
+      <div style={{width:250,background:'var(--bg-raised)',borderRadius:'var(--radius-lg)',border:'1px solid var(--line-hairline)'}}>
+        <EmptyState icon="list" title="Nothing captured yet" body="Everything you speak will land here." action={<Button variant="secondary" size="md">Capture something</Button>} />
+      </div>
+    </div>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<Card />);
+</script></body></html>
