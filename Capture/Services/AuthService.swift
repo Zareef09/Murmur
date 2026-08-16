@@ -8,6 +8,7 @@ import Supabase
 protocol AuthServicing: AnyObject {
     var isSignedIn: Bool { get }
     var userId: UUID? { get }
+    var isSessionReady: Bool { get }
     func signInWithApple() async throws
     func restoreSession() async throws
     func signOut() async throws
@@ -20,6 +21,7 @@ final class AuthService: AuthServicing {
 
     private(set) var isSignedIn = false
     private(set) var userId: UUID?
+    private(set) var isSessionReady = false
 
     func signInWithApple() async throws {
         guard let client = SupabaseClientProvider.client else {
@@ -53,6 +55,7 @@ final class AuthService: AuthServicing {
 
     /// Reloads the Keychain session (refreshes if expired). Missing session is not a throw.
     func restoreSession() async throws {
+        defer { isSessionReady = true }
         guard let client = SupabaseClientProvider.client else {
             isSignedIn = false
             userId = nil
@@ -82,6 +85,10 @@ final class AuthService: AuthServicing {
             return
         }
         try await client.auth.signOut()
+    }
+
+    func markSessionReadyForPreview() {
+        isSessionReady = true
     }
 
     private func refreshSignedInFlag() {

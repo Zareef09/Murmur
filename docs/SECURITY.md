@@ -223,7 +223,7 @@ Hosted project wiring is Session 97.
 - Settings: cache last-known `always_confirm` locally. Capture must work offline **after** first successful sign-in. First sign-in requires network.
 - Debounce settings upserts; `with check` must remain `auth.uid() = user_id`.
 - Widget / App Intents extension: **no** supabase-swift, **no** JWT. Shared flag only: “start listening when the app next becomes active.”
-- SwiftData: file protection complete or complete-until-first-unlock if background intents cannot wait (decide in S41; do not weaken without noting it here).
+- SwiftData: **complete-until-first-unlock** (`NSFileProtectionCompleteUntilFirstUserAuthentication`) on the history store directory and sqlite files. Chosen in S41 so later App Intents / widgets can run before the user unlocks again. Not CloudKit. Not `NSFileProtectionNone`.
 - Screenshots: capture and clarify views `privacySensitive()` where the API exists.
 - Speech: `requiresOnDeviceRecognition = true`. If the locale cannot, show copy — **do not** set the flag false to get network recognition.
 
@@ -231,7 +231,7 @@ Hosted project wiring is Session 97.
 
 ## 7. Logging ban
 
-`os.Logger` (or the S43 wrapper) only. **Never** log:
+`os.Logger` via **`LoggingPolicy`** (S43) only. Typed events; no free-form user strings. **Never** log:
 
 - transcript, `taskText`, `title`
 - EventKit identifiers
@@ -251,9 +251,11 @@ Create/update/delete **only** items whose identifier we stored. Never list all c
 
 ---
 
-## 9. App Store privacy nutrition (draft for S46 / S96)
+## 9. App Store privacy nutrition (S46 / S96)
 
-Not “Data Not Collected.” We collect:
+Not “Data Not Collected.” Manifest: `Capture/PrivacyInfo.xcprivacy`.
+
+We collect:
 
 | Type | Linked to identity? | Used for tracking? | Purpose |
 | --- | --- | --- | --- |

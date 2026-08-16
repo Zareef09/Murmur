@@ -12,6 +12,7 @@
 
 /* Begin PBXFileReference section */
 		F1A2B3C4D5E608192A3B0001 /* Murmur.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Murmur.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		F1A2B3C4D5E608192A3B0020 /* MurmurTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MurmurTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		F1A2B3C4D5E608192A3B0013 /* Supabase.debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Supabase.debug.xcconfig; sourceTree = "<group>"; };
 		F1A2B3C4D5E608192A3B0014 /* Supabase.release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Supabase.release.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -35,6 +36,11 @@
 			path = Capture;
 			sourceTree = "<group>";
 		};
+		F1A2B3C4D5E608192A3B0021 /* MurmurTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = MurmurTests;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -46,6 +52,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		F1A2B3C4D5E608192A3B0024 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -53,6 +66,7 @@
 			isa = PBXGroup;
 			children = (
 				F1A2B3C4D5E608192A3B0002 /* Capture */,
+				F1A2B3C4D5E608192A3B0021 /* MurmurTests */,
 				F1A2B3C4D5E608192A3B0016 /* Config */,
 				F1A2B3C4D5E608192A3B0005 /* Products */,
 			);
@@ -62,6 +76,7 @@
 			isa = PBXGroup;
 			children = (
 				F1A2B3C4D5E608192A3B0001 /* Murmur.app */,
+				F1A2B3C4D5E608192A3B0020 /* MurmurTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -101,6 +116,29 @@
 			productReference = F1A2B3C4D5E608192A3B0001 /* Murmur.app */;
 			productType = "com.apple.product-type.application";
 		};
+		F1A2B3C4D5E608192A3B0022 /* MurmurTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F1A2B3C4D5E608192A3B002A /* Build configuration list for PBXNativeTarget "MurmurTests" */;
+			buildPhases = (
+				F1A2B3C4D5E608192A3B0023 /* Sources */,
+				F1A2B3C4D5E608192A3B0024 /* Frameworks */,
+				F1A2B3C4D5E608192A3B0025 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				F1A2B3C4D5E608192A3B0026 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				F1A2B3C4D5E608192A3B0021 /* MurmurTests */,
+			);
+			name = MurmurTests;
+			packageProductDependencies = (
+			);
+			productName = MurmurTests;
+			productReference = F1A2B3C4D5E608192A3B0020 /* MurmurTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -125,6 +163,10 @@
 							};
 						};
 					};
+					F1A2B3C4D5E608192A3B0022 = {
+						CreatedOnToolsVersion = 26.4;
+						TestTargetID = F1A2B3C4D5E608192A3B0006;
+					};
 				};
 			};
 			buildConfigurationList = F1A2B3C4D5E608192A3B0009 /* Build configuration list for PBXProject "Murmur" */;
@@ -145,9 +187,28 @@
 			projectRoot = "";
 			targets = (
 				F1A2B3C4D5E608192A3B0006 /* Murmur */,
+				F1A2B3C4D5E608192A3B0022 /* MurmurTests */,
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXContainerItemProxy section */
+		F1A2B3C4D5E608192A3B0027 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F1A2B3C4D5E608192A3B0008 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F1A2B3C4D5E608192A3B0006;
+			remoteInfo = Murmur;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXTargetDependency section */
+		F1A2B3C4D5E608192A3B0026 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F1A2B3C4D5E608192A3B0006 /* Murmur */;
+			targetProxy = F1A2B3C4D5E608192A3B0027 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXResourcesBuildPhase section */
 		F1A2B3C4D5E608192A3B000B /* Resources */ = {
@@ -157,7 +218,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-/* End PBXResourcesBuildPhase section */
+		F1A2B3C4D5E608192A3B0025 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 
 /* Begin PBXSourcesBuildPhase section */
 		F1A2B3C4D5E608192A3B000A /* Sources */ = {
@@ -167,7 +234,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-/* End PBXSourcesBuildPhase section */
+		F1A2B3C4D5E608192A3B0023 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 
 /* Begin XCBuildConfiguration section */
 		F1A2B3C4D5E608192A3B000C /* Debug */ = {
@@ -285,6 +358,58 @@
 			};
 			name = Release;
 		};
+		F1A2B3C4D5E608192A3B0028 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = app.murmur.capture.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Murmur.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Murmur";
+			};
+			name = Debug;
+		};
+		F1A2B3C4D5E608192A3B0029 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = app.murmur.capture.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Murmur.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Murmur";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -302,6 +427,15 @@
 			buildConfigurations = (
 				F1A2B3C4D5E608192A3B000C /* Debug */,
 				F1A2B3C4D5E608192A3B000D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F1A2B3C4D5E608192A3B002A /* Build configuration list for PBXNativeTarget "MurmurTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F1A2B3C4D5E608192A3B0028 /* Debug */,
+				F1A2B3C4D5E608192A3B0029 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

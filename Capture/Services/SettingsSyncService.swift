@@ -1,8 +1,5 @@
 import Foundation
-import os
 import Supabase
-
-private let settingsLog = Logger(subsystem: "app.murmur.capture", category: "settings")
 
 private struct UserSettingsRow: Decodable, Equatable {
     let userId: UUID
@@ -114,7 +111,7 @@ final class SettingsSyncService: SettingsSyncing {
                 )
                 .execute()
             hasPendingWrite = false
-            settingsLog.info("settings upsert ok")
+            LoggingPolicy.log(.settingsUpsertOK, category: .settings)
         } catch {
             // Keep cache. Capture stays usable offline.
         }

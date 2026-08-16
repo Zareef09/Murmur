@@ -13,7 +13,7 @@ struct SignInView: View {
     var body: some View {
         VStack(spacing: 0) {
             Spacer()
-            wordmark
+            Wordmark()
                 .padding(.bottom, MurmurSpace.stackSection)
             VStack(alignment: .leading, spacing: MurmurSpace.stackTight) {
                 Text("Say what you need to remember.")
@@ -50,21 +50,6 @@ struct SignInView: View {
         .padding(.bottom, MurmurSpace.stackLoose)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .murmurCanvas(wash: false)
-    }
-
-    private var wordmark: some View {
-        HStack(alignment: .center, spacing: 4.5) {
-            Text("murmur")
-                .font(MurmurType.wordmark)
-                .tracking(MurmurType.trackingWordmark)
-                .foregroundStyle(MurmurColor.textPrimary)
-            Circle()
-                .fill(MurmurColor.accent)
-                .frame(width: 5, height: 5)
-                .offset(x: -1.5, y: 2)
-        }
-        .accessibilityElement(children: .ignore)
-        .accessibilityLabel("murmur")
     }
 
     @MainActor

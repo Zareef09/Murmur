@@ -119,76 +119,76 @@ Reminder vs Calendar (deterministic — spec §6.3): explicit time → Calendar 
 - [x] S32 — MurmurIconButton — quiet / surface / accent; 44pt min; capture Settings uses quiet.
 - [x] S33 — DestinationBadge — chip / glyph / quiet; Reminder moss + Event plum; icon and word together.
 - [x] S34 — EmptyState, PermissionRow, ToggleRow — catalog; Settings confirm uses ToggleRow.
-- [ ] S35 — DestinationToggle + EditableField
-- [ ] S36 — TranscriptView + SuccessBar
-- [ ] S37 — Wordmark + AppIconView
-- [ ] S38 — CaptureBloom idle / thinking / done
-- [ ] S39 — CaptureBloom listening + level
+- [x] S35 — DestinationToggle + EditableField — two destinations; empty is “No date”; catalog.
+- [x] S36 — TranscriptView + SuccessBar — wrap, never truncate; Undo ghost; 5s window owned by parent.
+- [x] S37 — Wordmark + AppIconView — lowercase murmur + ember dot; icon is the well, not a mic.
+- [x] S38 — CaptureBloom idle / thinking / done — breath, hold+arc, settle+check. Listening is S39.
+- [x] S39 — CaptureBloom listening + level — lagged rings; 120/400ms follow; catalog sim, no mic yet.
 
 **Phase 0b — Persistence, permissions, onboarding**
 
-- [ ] S40 — SwiftData `Capture` model
-- [ ] S41 — ModelContainer + file protection
-- [ ] S42 — HistoryPurgeService (3 days)
-- [ ] S43 — LoggingPolicy
-- [ ] S44 — PermissionsService
-- [ ] S45 — Info.plist permission strings
-- [ ] S46 — PrivacyInfo.xcprivacy
-- [ ] S47 — Onboarding slide 1
-- [ ] S48 — Onboarding slide 2
-- [ ] S49 — Onboarding slide 3
-- [ ] S50 — Onboarding + Apple + first-launch gate
+- [x] S40 — SwiftData `Capture` model — spec fields; no audio; no cloud history id.
+- [x] S41 — ModelContainer + file protection — complete-until-first-unlock; no CloudKit; probe insert/fetch/delete.
+- [x] S42 — HistoryPurgeService (3 days) — 72h `createdAt`; EventKit untouched; frozen-date tests.
+- [x] S43 — LoggingPolicy — typed os.Logger events; no transcript/title/tokens/EventKit IDs.
+- [x] S44 — PermissionsService — mic, speech, reminders, calendar; fullAccess only; no EventKit listing. Needs device.
+- [x] S45 — Info.plist permission strings — four why-copy usage descriptions; no error/failed/!.
+- [x] S46 — PrivacyInfo.xcprivacy — User ID + product interaction; no tracking; UserDefaults CA92.1.
+- [x] S47 — Onboarding slide 1 — “Say it once. It’s kept.” Idle well; Next; not gated yet.
+- [x] S48 — Onboarding slide 2 — permission priming; Allow access; kit rows. Needs device for sheets.
+- [x] S49 — Onboarding slide 3 — hands-free Action Button note; AppIcon; Set it up (walkthrough S87).
+- [x] S50 — Onboarding + Apple + first-launch gate — slides then Sign in; skip slides if signed in.
 
 **Phase 1 — Transcribe**
 
-- [ ] S51 — AudioSessionManager
-- [ ] S52 — SpeechService (on-device request)
-- [ ] S53 — SpeechService stream + silence stop
-- [ ] S54 — Unsupported locale path
-- [ ] S55 — CaptureView idle
-- [ ] S56 — Live transcript wiring
-- [ ] S57 — Audio-level → Bloom
+- [x] S51 — AudioSessionManager — record or playback, never both; deactivate between.
+- [x] S52 — SpeechService (on-device request) — `requiresOnDeviceRecognition = true`; no cloud fallback.
+- [x] S53 — SpeechService stream + silence stop — RAM buffers; ~1.5s after last voice. Needs device.
+- [x] S54 — Unsupported locale path — copy + no cloud request; `zz` locale tests. Device for a real unsupported language.
+- [x] S55 — CaptureView idle — Light Well 240, quiet History/Settings, “Tap to speak”. Tap/listen is S56.
+- [x] S56 — Live transcript wiring — tap well → listen; TranscriptView; silence → idle. Needs device.
+- [x] S57 — Audio-level → Bloom — normalised RMS 0…1; Bloom attack/release. Needs device.
 
 **Phase 2 — Parse, classify, save**
 
-- [ ] S58 — ParsedIntent & CaptureDestination
-- [ ] S59 — ParsingService: date extraction
-- [ ] S60 — ParsingService: taskText cleanup
-- [ ] S61 — Parsing tests A
-- [ ] S62 — Parsing tests B
-- [ ] S63 — ClassificationService
-- [ ] S64 — Classification tests
-- [ ] S65 — EventKitService: Reminder
-- [ ] S66 — EventKitService: Event
-- [ ] S67 — EventKit delete-by-id only
-- [ ] S68 — Wire pipeline auto-save (temporary)
+- [x] S58 — ParsedIntent & CaptureDestination — spec fields; reminder | event; no parse yet.
+- [x] S59 — ParsingService: date extraction — NSDataDetector; clock time on substring; range duration.
+- [x] S60 — ParsingService: taskText cleanup — drop date phrase + remind/remember frame; NLTagger.
+- [x] S61 — Parsing tests A — 20 phrases: no-date, tomorrow, clock time, two dates, garbled date-only.
+- [x] S62 — Parsing tests B — 20 more phrases + empty transcript; still no destination.
+- [x] S63 — ClassificationService — unambiguous rows; date-only no-keyword asks destination (no bias).
+- [x] S64 — Classification tests — wider table + parse-then-classify; still no destination bias.
+- [x] S65 — EventKitService: Reminder — title + optional due; no library listing. Needs device.
+- [x] S66 — EventKitService: Event — title, start, duration or 60m; default calendar. Needs device.
+- [x] S67 — EventKit delete-by-id only — `calendarItem(withIdentifier:)`; no library listing. Needs device.
+- [x] S68 — Wire pipeline auto-save (temporary) — parse → classify → EventKit then SwiftData + purge. Needs device.
 
 **Phase 3 — Confirmation**
 
-- [ ] S69 — ConfirmationView (read-only)
-- [ ] S70 — Inline edit: title + destination
-- [ ] S71 — Inline edit: date/time
-- [ ] S72 — Confirm/cancel + always-confirm toggle
+- [x] S69 — ConfirmationView (read-only)
+- [x] S70 — Inline edit: title + destination
+- [x] S71 — Inline edit: date/time
+- [x] S72 — Confirm/cancel + always-confirm toggle
 
 **Phase 4 — Voice clarification**
 
-- [ ] S73 — SpeechSynthService
-- [ ] S74 — clarifying state + question templates
-- [ ] S75 — record↔speak handoff + one-loop cap
-- [ ] S76 — ClarificationView + tap fallback
-- [ ] S77 — Merge answer → re-classify once
+- [x] S73 — SpeechSynthService
+- [x] S74 — clarifying state + question templates
+- [x] S75 — record↔speak handoff + one-loop cap
+- [x] S76 — ClarificationView + tap fallback
+- [x] S77 — Merge answer → re-classify once
 
 **Phase 5 — History**
 
-- [ ] S78 — HistoryView list + row
-- [ ] S79 — Deep-link to Reminders/Calendar
-- [ ] S80 — Swipe delete (app-only vs also-external)
-- [ ] S81 — Success + Undo
+- [x] S78 — HistoryView list + row
+- [x] S79 — Deep-link to Reminders/Calendar
+- [x] S80 — Swipe delete (app-only vs also-external)
+- [x] S81 — Success + Undo
 
 **Phase 6 — Quick-launch**
 
-- [ ] S82 — QuickCaptureIntent
-- [ ] S83 — Siri phrases (AppShortcutsProvider)
+- [x] S82 — QuickCaptureIntent
+- [x] S83 — Siri phrases (AppShortcutsProvider)
 - [ ] S84 — Widget extension target
 - [ ] S85 — Lock-screen accessory widget
 - [ ] S86 — Control Center control (iOS 18+)
@@ -379,50 +379,267 @@ Do: empty History/first-run; granted/needed (clay, never red); ember settings sw
 DoD: catalog both modes.  
 Done 15 Aug 2026: three components + `SettingsDataCatalog`; Settings confirm row.
 
+**S35 — DestinationToggle + EditableField**  
+Do: Reminder ↔ Event (icon + word + tint); tap-to-edit rows; empty is a calm placeholder.  
+DoD: catalog both modes. Not wired into Settings (default destination is an open decision).  
+Done 15 Aug 2026: `DestinationToggle`, `EditableField`, `FieldsCatalog`.
+
+**S36 — TranscriptView + SuccessBar**  
+Do: live caption (settled + partial); success settle with Undo; no confetti.  
+DoD: catalog both modes. Not wired into Capture home yet (S55–S57 / S81).  
+Done 15 Aug 2026: `TranscriptView`, `SuccessBar`, `CaptureFeedbackCatalog`.
+
+**S37 — Wordmark + AppIconView**  
+Do: lowercase `murmur` + ember dot; in-app icon geometry (not a mic).  
+DoD: catalog both modes.  
+Done 15 Aug 2026: `Wordmark`, `AppIconView`, `BrandCatalog`; Sign-in uses `Wordmark`.
+
+**S38 — CaptureBloom idle / thinking / done**  
+Do: Light Well morph; idle 3.8s breath; thinking hold + rim arc; done core + check. Caption under, never inside.  
+DoD: catalog both modes; Reduce Motion holds still. Not on Capture home yet (S55).  
+Done 15 Aug 2026: `CaptureBloom` + `CaptureBloomCatalog`.
+
+**S39 — CaptureBloom listening + level**  
+Do: bloom opens with amplitude; rings lag 0 / 90 / 180ms; smooth ~120ms attack / ~400ms release.  
+DoD: catalog both modes; not a meter; Reduce Motion snaps. Mic tap is S57.  
+Done 15 Aug 2026: `listening` + `level` on `CaptureBloom`; catalog uses a simulated wave.
+
 **S25–S39** — Port tokens and every design-system component to SwiftUI (colors, space, type, motion, Theme, Icon, Button, IconButton, DestinationBadge, EmptyState/PermissionRow/ToggleRow, DestinationToggle/EditableField, Transcript/SuccessBar, Wordmark/AppIcon, CaptureBloom idle/thinking/done, then listening+level).  
 Each session’s DoD: catalog or preview in both modes; Ember ownership; Reduce Motion where motion is involved.
 
 ### Phase 0b
 
-**S40** — `Capture` `@Model` per spec §11. No audio. No cloud history id.  
-**S41** — ModelContainer + file protection; dummy insert/fetch then remove.  
-**S42** — HistoryPurgeService: 72 hours; tests with frozen dates; EventKit untouched.  
-**S43** — LoggingPolicy: never log transcript/title/tokens/EventKit IDs.  
-**S44** — PermissionsService (device/sim).  
-**S45** — Four usage-description strings, warm copy.  
-**S46** — PrivacyInfo: account + settings, not “data not collected”.  
-**S47–S49** — Onboarding slides 1–3 matching the kit.  
-**S50** — Apple as last step; skip later if signed in.
+**S40 — `Capture` SwiftData model**  
+Do: spec §11 fields + `createdAt` for TTL. No audio. No cloud history id.  
+DoD: compiles.  
+Done 15 Aug 2026: `Capture/Models/Capture.swift`; `CaptureDestination` is `Codable`.
+
+**S41 — ModelContainer + file protection**  
+Do: on-device store; complete-until-first-unlock; dummy insert/fetch then remove.  
+DoD: boots clean.  
+Done 15 Aug 2026: `Persistence` + `MurmurApp.modelContainer`; SECURITY.md notes the protection choice.
+
+**S42 — HistoryPurgeService (3 days)**  
+Do: delete SwiftData rows older than 72 hours on launch and after save. Never EventKit-delete on TTL.  
+DoD: old rows gone; EventKit untouched; frozen-date tests.  
+Done 15 Aug 2026: `HistoryPurgeService` + `saveAndPurgeHistory`; `MurmurTests`.
+
+**S43 — LoggingPolicy**  
+Do: os.Logger wrapper; never log transcript/title/tokens/EventKit IDs.  
+DoD: settings upsert uses it; tests cover allowed vs banned shapes.  
+Done 15 Aug 2026: `LoggingPolicy`; SettingsSyncService; `LoggingPolicyTests`.
+
+**S44 — PermissionsService**  
+Do: Speech, Mic, Calendar, Reminders (iOS 17 full access). No EventKit library listing.  
+DoD: status mapping tests; system prompts need S45 strings (skipped until then so the app does not crash). Device for real grants.  
+Done 15 Aug 2026: `PermissionsService`; `PermissionsServiceTests`.
+
+**S45 — Info.plist usage strings**  
+Do: four warm why-copy strings (mic, speech, reminders, calendar).  
+DoD: keys present; no error/failed/!.  
+Done 15 Aug 2026: `Capture/Info.plist`; `UsageDescriptionTests`.
+
+**S46 — PrivacyInfo.xcprivacy**  
+Do: account + settings; not “data not collected”; no tracking.  
+DoD: manifest in the app bundle.  
+Done 15 Aug 2026: `Capture/PrivacyInfo.xcprivacy`; `PrivacyManifestTests`.
+
+**S47 — Onboarding slide 1**  
+Do: what it does; kit copy; idle Light Well.  
+DoD: light + dark preview. Not first-launch gated (S50).  
+Done 15 Aug 2026: `OnboardingView` slide 1.
+
+**S48 — Onboarding slide 2**  
+Do: permission priming; kit copy; Microphone / Reminders / Calendar rows; Allow access.  
+DoD: light + dark preview. Device for system sheets.  
+Done 15 Aug 2026: slide 2 in `OnboardingView`; Next from slide 1.
+
+**S49 — Onboarding slide 3**  
+Do: optional hands-free note; kit copy; app icon; Set it up (no silent Accessibility change).  
+DoD: light + dark preview. Walkthrough is S87.  
+Done 15 Aug 2026: slide 3 in `OnboardingView`.
+
+**S50 — Onboarding + Apple + first-launch gate**  
+Do: slides then Continue with Apple; later launches skip slides if signed in.  
+DoD: fresh install → slides → Sign in → capture; signed-in relaunch skips slides.  
+Done 15 Aug 2026: `OnboardingGate`; `ContentView` gate; restore waits before routing.
 
 ### Phase 1
 
-**S51** — AudioSessionManager.  
-**S52–S53** — Speech on-device + stream + ~1.5s silence stop (device).  
-**S54** — Unsupported locale, no cloud fallback.  
-**S55–S57** — CaptureView idle, live transcript, level → Bloom (device for speech).
+**S51 — AudioSessionManager**  
+Do: `enterRecordMode` / `enterPlaybackMode` / `deactivate`; never both.  
+DoD: tests prove deactivate between modes.  
+Done 15 Aug 2026: `AudioSessionManager` + `AudioSessionManagerTests`.
+
+**S52 — SpeechService on-device request**  
+Do: `SFSpeechAudioBufferRecognitionRequest` with `requiresOnDeviceRecognition = true`. Never cloud fallback.  
+DoD: request flag stays true; stream/silence is S53.  
+Done 15 Aug 2026: `SpeechService` + `SpeechRecognitionPolicyTests`.
+
+**S53 — SpeechService stream + silence stop**  
+Do: audio tap → on-device request; stop ~1.5s after last voice; no audio on disk.  
+DoD: silence unit tests; live listen needs device.  
+Done 15 Aug 2026: `SilenceWatch` + engine tap; `SilenceWatchTests`.
+
+**S54 — Unsupported locale, no cloud fallback**  
+Do: if the locale cannot run on-device speech, explain; never set `requiresOnDeviceRecognition` false.  
+DoD: copy is a fact (no error/failed/!); unavailable locale yields no request. Device for a real language.  
+Done 15 Aug 2026: `SpeechCopy` + `SpeechLocalePolicy`; Capture caption; `SpeechCopyTests`.
+
+**S55 — CaptureView idle**  
+Do: Light Well at rest (240); History + Settings quiet icons; caption under the well; ember only on the well.  
+DoD: light + dark idle; no live transcript (S56); no mic level (S57).  
+Done 15 Aug 2026: `CaptureView` kit chrome; History icon lands on a stub (`HistoryView` list is S78).
+
+**S56 — Listening + live transcript**  
+Do: tap well → record mode + on-device stream; `TranscriptView` above the well; silence ends the turn. Bloom listening, level stays 0.  
+DoD: unit tests for start / empty silence / permission; live listen needs device. No parse (S58).  
+Done 15 Aug 2026: `CaptureViewModel.tapWell`; `SpeechService` turn callbacks; listening previews.
+
+**S57 — Audio-level → Bloom**  
+Do: tap RMS → 0…1; feed `CaptureBloom.level` while listening. Bloom already smooths (120/400ms). Never store audio.  
+DoD: unit tests for floor/peak mapping; live well needs device.  
+Done 15 Aug 2026: `SpeechEnergy.normalizedLevel`; `listenLevel` on the view model.
 
 ### Phase 2
 
-**S58–S62** — ParsedIntent, date extract, taskText cleanup, ~40 phrase tests.  
-**S63–S64** — Classification + tests; **stop if default-destination bias is required.**  
-**S65–S67** — EventKit create reminder/event; delete-by-id only (device).  
-**S68** — End-to-end auto-save (temporary); local history only (device).
+**S58 — ParsedIntent & CaptureDestination**  
+Do: spec §6.1 fields; destination is reminder or event only. No date extract (S59). No default-destination bias.  
+DoD: types compile; field tests; not wired to listen yet.  
+Done 15 Aug 2026: `ParsedIntent`, `ClarificationKind`; `CaptureDestination` CaseIterable; `ParsedIntentTests`.
+
+**S59 — ParsingService: date extraction**  
+Do: `NSDataDetector` `.date`; `hasExplicitTime` from the matched substring; `durationMinutes` from a range. Do not strip fillers (S60).  
+DoD: tomorrow / at 5 / no-date tests; two dates → clarify date.  
+Done 15 Aug 2026: `ParsingService` + `ClockTimePhrase`; `ParsingServiceDateTests`.
+
+**S60 — ParsingService: taskText cleanup**  
+Do: remove matched date substring; NLTagger + frame words (“remind me to”, “remember to”, leftover at/on). Trim.  
+DoD: spec example → `call mom`; empty remainder is garbled, not a guessed title. Phrase corpus is S61–S62.  
+Done 15 Aug 2026: `TaskTextCleanup`; `ParsingServiceCleanupTests`.
+
+**S61 — Parsing tests A**  
+Do: first ~20 phrases (no date, tomorrow, clock time, ranges, two dates, date-only garbled). No destination.  
+DoD: corpus A passes.  
+Done 16 Aug 2026: `ParsingPhraseTestsA`.
+
+**S62 — Parsing tests B**  
+Do: remaining ~20 phrases (mid-sentence date, midnight/noon, weekdays, empty). No destination.  
+DoD: corpus A + B ≈ 40 phrases.  
+Done 16 Aug 2026: `ParsingPhraseTestsB`; shared `PhraseCase`.  
+**S63 — ClassificationService**  
+Do: spec §6.3 unambiguous rows. Date + no time + no keyword → clarify destination (open decision; do not guess).  
+DoD: clock time → event; no date → reminder; date-only asks destination.  
+Done 16 Aug 2026: `ClassificationService`; `destination` + `confidence` on `ParsedIntent`.
+
+**S64 — Classification tests**  
+Do: wider §6.3 table; parse-then-classify spoken phrases. Do not invent a date-only bias.  
+DoD: reminder / event / time / destination / date / garbled rows pass.  
+Done 16 Aug 2026: `ClassificationTableTests`.  
+**S65 — EventKitService: Reminder**  
+Do: `EKReminder` title + optional due; date-only has no fake clock; `calendarItemIdentifier` returned, never logged. Default reminder calendar only.  
+DoD: due-component tests; unauthorized throws; live save needs device. Events are S66.  
+Done 16 Aug 2026: `createReminder`; `ReminderDue`; `EventKitCopy`.
+
+**S66 — EventKitService: Event**  
+Do: `EKEvent` title, start, duration or 60m; default calendar for new events; identifier returned, never logged.  
+DoD: span tests; unauthorized throws; live save needs device. Delete is S67.  
+Done 16 Aug 2026: `createEvent`; `EventSpan`; `eventCreated` log.
+
+**S67 — EventKit delete-by-id only**  
+Do: remove only `calendarItem(withIdentifier:)`. Never enumerate calendars/reminders. Empty id does not scan. Missing item is a no-op. Never log the id.  
+DoD: empty-id test; live delete needs device.  
+Done 16 Aug 2026: `deleteItem`; `itemDeleted` log.
+
+**S68 — Wire pipeline auto-save (temporary)**  
+Do: after silence, parse + classify; if confident, EventKit then SwiftData + purge. Skip confirmation (S69). Clarify kinds are tertiary facts, not the spoken loop.  
+DoD: reminder/event save tests; EventKit failure leaves no history row; live save needs device.  
+Done 16 Aug 2026: `finishCapture` on `CaptureViewModel`; `ClarifyCopy`.
 
 ### Phase 3
 
-**S69–S72** — Confirmation sheet; edit title/destination/date; Save/Cancel; always-confirm via SettingsRepository.
+**S69 — ConfirmationView (read-only)**  
+Do: kit sheet; fields display title / when / destination; no inline edit. Confident captures stop here; Save files EventKit then history. Cancel drops the turn. `alwaysConfirm` skip is S72.  
+DoD: reminder/event confirm-then-save tests; cancel leaves no row; When formatter; live save needs device.  
+Done 16 Aug 2026: `ConfirmationView`; `ConfirmationCopy`; `pendingIntent` on the view model.
+
+**S70 — Inline edit: title + destination**  
+Do: tap title to type; tap Goes to for Reminder/Event toggle. One field at a time. Headline “Fix it up” while editing. When is S71.  
+DoD: edited title saves; destination override saves the chosen kind; When still display-only.  
+Done 16 Aug 2026: `ConfirmationEditField`; title TextField + `DestinationToggle` on the sheet.
+
+**S71 — Inline edit: date/time**  
+Do: When row opens a system wheel DatePicker (Murmur tint). Reminders: date-only, include time, or No date. Events always have a clock.  
+DoD: date-only reminder due; edited event start; opening-seed tests. Live picker on device.  
+Done 16 Aug 2026: `ConfirmationWhenEditor`; `ConfirmationWhenEdit`.
+
+**S72 — Save / Cancel + always-confirm**  
+Do: Settings toggle reads/writes SettingsRepository (sync via S23). Off + confident → skip sheet, EventKit then history. On → confirmation. Unsure still asks. Success bar is S81.  
+DoD: skip-sheet save test; unsure still no save; toggle writes cache.  
+Done 16 Aug 2026: `finishCapture` honors `alwaysConfirm`; `FakeSettingsSync`.
 
 ### Phase 4
 
-**S73–S77** — Synth; clarifying templates; record↔speak one loop; ClarificationView + tap; merge + reclassify once (device for audio).
+**S73 — SpeechSynthService**  
+Do: `AVSpeechSynthesizer` via playback mode only; deactivate after. Never log the utterance. Empty text is a no-op.  
+DoD: playback then deactivate tests; empty skips audio; log has no words. Live speak needs device.  
+Done 16 Aug 2026: `SpeechSynthService` + `SystemSpeechUtterer`; `SpeechSynthServiceTests`.
+
+**S74 — clarifying state + question templates**  
+Do: unsure parses enter `.clarifying` with spec questions (incl. two weekdays). Quiet-mode hint copy. Do not speak or listen yet (S75).  
+DoD: template tests; date-only goes to clarifying, not idle; always-confirm off still clarifies.  
+Done 16 Aug 2026: `ClarifyCopy.question`; `ClarifyWeekdays`; pending intent kept.
+
+**S75 — record↔speak + one-loop cap**  
+Do: speak the question (playback), then listen once (record). Never both. A spoken answer goes to confirmation (merge is S77). Empty answer stays clarifying without a second question.  
+DoD: speak-then-listen test; no second synth; live audio needs device.  
+Done 16 Aug 2026: `speakThenListen`; `clarificationAnswer`; `FakeSpeechSynth`.
+
+**S76 — ClarificationView + tap fallback**  
+Do: kit screen; quiet hint; tap chips when the choice is obvious (destination, two weekdays, today/tomorrow); Start over. Merge is S77.  
+DoD: tap fallback reaches confirmation; start over returns idle.  
+Done 16 Aug 2026: `ClarificationView`; `tapClarificationAnswer`; `startOver`.
+
+**S77 — Merge answer → re-classify once**  
+Do: parse the answer for the missing field only; merge into the pending intent; classify once; always show confirmation (even if confirm-before-save is off). Do not ask a second question. Do not invent reminder vs calendar.  
+DoD: destination/date/time/garbled merge tests; after clarify the sheet always appears; chosen destination is kept.  
+Done 16 Aug 2026: `ClarificationMerge`; classify keeps a user-chosen destination.
 
 ### Phase 5
 
-**S78–S81** — History list; deep link; swipe delete two options; success + Undo 5s.
+**S78 — HistoryView list + row**  
+Do: `@Query` newest-first; kit HistoryRow; Today / Yesterday groups; empty state (3-day memory, not an archive). Open is S79. Swipe delete is S80.  
+DoD: empty kit copy; newest-first groups; live list needs a saved capture.  
+Done 16 Aug 2026: `HistoryView`; `HistoryRow`; `HistoryListFormat`.
+
+**S79 — Deep-link to Reminders/Calendar**  
+Do: tap a history row; look up only the stored identifier; open Calendar (`calshow`) or Reminders. Missing item → quiet fact. Never log the identifier. Device.  
+DoD: URL builders omit identifiers; empty/unknown id does not scan the library; live open needs device.  
+Done 16 Aug 2026: `EventKitDeepLink`; `openingURL`; History row tap.
+
+**S80 — Swipe delete (app-only vs also-external)**  
+Do: kit swipe reveals clay trash; confirm “Delete from Murmur only” vs “Also delete the reminder/event”. Murmur-only drops SwiftData. Also-external deletes EventKit by stored id first, then the row. EventKit failure keeps the row.  
+DoD: murmur-only does not call EventKit; also-external deletes both; failure leaves the row. Live swipe on device.  
+Done 16 Aug 2026: `HistoryDelete`; swipe + confirmationDialog.
+
+**S81 — Success + Undo 5s**  
+Do: after save, `.success` + SuccessBar; bloom “Saved”; Undo 5s (`MurmurMotion.undoWindow`). Undo deletes EventKit and the history row. Window expiry keeps the save. Always-confirm off still shows success.  
+DoD: success then idle after the window; undo removes both; copy has no celebration.  
+Done 16 Aug 2026: `SuccessCopy`; `undoSave`; Capture home SuccessBar.
 
 ### Phase 6
 
-**S82–S87** — App Intent; Siri phrases; widget target (no Supabase in widget); lock screen; Control Center iOS 18+; Back Tap walkthrough (device).
+**S82 — QuickCaptureIntent**  
+Do: `openAppWhenRun = true`; arm a start-listening flag; on foreground listen if signed in; if signed out, sign-in first (flag stays). No App Group yet (S84). Siri phrases are S83.  
+DoD: flag is a bool only; signed-in idle starts listening; signed-out leaves the flag; live Shortcuts need device.  
+Done 16 Aug 2026: `QuickCaptureFlag`; `applyQuickCaptureIfPending`.
+
+**S83 — Siri phrases (AppShortcutsProvider)**  
+Do: donate natural phrases for quick capture / Murmur. Each phrase includes the app name. No widget yet.  
+DoD: one donated shortcut; live “Hey Siri” needs device.  
+Done 16 Aug 2026: `CaptureShortcuts` phrases.
+
+**S84–S87** — Widget target (no Supabase in widget); lock screen; Control Center iOS 18+; Back Tap walkthrough (device).
 
 ### Phase 7
 

@@ -17,5 +17,13 @@
 		<key>NSAllowsLocalNetworking</key>
 		<true/>
 	</dict>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Your microphone, so Murmur can hear you.</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>Murmur turns what you say into words on this phone.</string>
+	<key>NSRemindersFullAccessUsageDescription</key>
+	<string>So Murmur can save the reminders you speak, and open or undo them later.</string>
+	<key>NSCalendarsFullAccessUsageDescription</key>
+	<string>So Murmur can save the events you speak, and open or undo them later.</string>
 </dict>
 </plist>
