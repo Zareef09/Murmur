@@ -1,0 +1,4 @@
+// Debug: optional local overlay (gitignored). Empty defaults fail closed.
+SUPABASE_URL =
+SUPABASE_ANON_KEY =
+#include? "Supabase.local.xcconfig"

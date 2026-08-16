@@ -1,0 +1,4 @@
+// Release ships without a client until Session 97 points these at hosted anon/publishable keys.
+// Never put service_role here.
+SUPABASE_URL =
+SUPABASE_ANON_KEY =
