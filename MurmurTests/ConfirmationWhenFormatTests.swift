@@ -57,5 +57,17 @@ final class ConfirmationWhenFormatTests: XCTestCase {
         XCTAssertEqual(ConfirmationCopy.destinationValue(.event), "Calendar")
         XCTAssertEqual(ConfirmationCopy.includeTime, "Include time")
         XCTAssertEqual(ConfirmationCopy.dateOnly, "Date only")
+        XCTAssertEqual(ConfirmationCopy.pastDay, "This day has passed.")
+    }
+
+    func testPastDayIsQuietAndAllowed() {
+        let yesterday = calendar.date(byAdding: .day, value: -1, to: now)!
+        XCTAssertTrue(ConfirmationWhenFormat.isPast(date: yesterday, now: now, calendar: calendar))
+        XCTAssertFalse(ConfirmationWhenFormat.isPast(date: now, now: now, calendar: calendar))
+        XCTAssertFalse(ConfirmationWhenFormat.isPast(date: nil, now: now, calendar: calendar))
+        XCTAssertEqual(
+            ConfirmationWhenFormat.display(date: yesterday, hasExplicitTime: false, now: now, calendar: calendar),
+            "Yesterday"
+        )
     }
 }

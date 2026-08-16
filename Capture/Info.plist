@@ -17,6 +17,8 @@
 		<key>NSAllowsLocalNetworking</key>
 		<true/>
 	</dict>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>So Murmur can reach the account server running on your Mac while you build it.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Your microphone, so Murmur can hear you.</string>
 	<key>NSSpeechRecognitionUsageDescription</key>

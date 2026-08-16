@@ -103,8 +103,10 @@ final class PermissionsService: PermissionsServicing {
         status == .fullAccess ? .granted : .needed
     }
 
-    private func requestSpeech() async {
-        await withCheckedContinuation { continuation in
+    /// `nonisolated` on purpose: `requestAuthorization` hands back a non-`Sendable` closure, which would
+    /// inherit `@MainActor` here and trap when Speech calls it on a background queue.
+    private nonisolated func requestSpeech() async {
+        await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
             SFSpeechRecognizer.requestAuthorization { _ in
                 continuation.resume()
             }

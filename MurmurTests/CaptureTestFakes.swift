@@ -79,7 +79,10 @@ final class FakeSettingsSync: SettingsSyncing {
     var setCount = 0
 
     func loadCached() {}
-    func fetchRemote() async throws {}
+    var fetchError: Error?
+    func fetchRemote() async throws {
+        if let fetchError { throw fetchError }
+    }
     func setAlwaysConfirm(_ value: Bool) {
         alwaysConfirm = value
         setCount += 1

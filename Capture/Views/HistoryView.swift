@@ -55,18 +55,26 @@ struct HistoryView: View {
     }
 
     private var empty: some View {
-        EmptyState(
-            icon: .list,
-            title: HistoryCopy.emptyTitle,
-            message: HistoryCopy.emptyBody
-        ) {
-            MurmurButton(
-                title: HistoryCopy.captureAction,
-                variant: .secondary,
-                size: .md
+        VStack(spacing: MurmurSpace.space5) {
+            EmptyState(
+                icon: .list,
+                title: HistoryCopy.emptyTitle,
+                message: HistoryCopy.emptyBody
             ) {
-                dismiss()
+                MurmurButton(
+                    title: HistoryCopy.captureAction,
+                    variant: .secondary,
+                    size: .md
+                ) {
+                    dismiss()
+                }
             }
+            Text(HistoryCopy.ttlNote)
+                .font(MurmurType.footnote)
+                .tracking(MurmurType.trackingFootnote)
+                .foregroundStyle(MurmurColor.textTertiary)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, MurmurSpace.gutterScreen)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
@@ -101,6 +109,7 @@ struct HistoryView: View {
                 .textCase(.uppercase)
                 .foregroundStyle(MurmurColor.textTertiary)
                 .padding(.horizontal, MurmurSpace.space4)
+                .accessibilityAddTraits(.isHeader)
 
             VStack(spacing: 0) {
                 ForEach(Array(items.enumerated()), id: \.element.id) { index, capture in
@@ -195,6 +204,14 @@ struct HistoryView: View {
     }
     .modelContainer(historyPreviewContainer())
     .preferredColorScheme(.light)
+}
+
+#Preview("History · populated · dark") {
+    NavigationStack {
+        HistoryView()
+    }
+    .modelContainer(historyPreviewContainer())
+    .preferredColorScheme(.dark)
 }
 
 @MainActor

@@ -19,6 +19,8 @@ final class HistoryListFormatTests: XCTestCase {
         XCTAssertEqual(HistoryCopy.emptyTitle, "Nothing captured yet")
         XCTAssertEqual(HistoryCopy.emptyBody, "Tap the well on the home screen and say the thing you keep almost forgetting.")
         XCTAssertEqual(HistoryCopy.captureAction, "Capture something")
+        XCTAssertEqual(HistoryCopy.swipeHint, "Tap a row to swipe it aside, then delete.")
+        XCTAssertEqual(HistoryCopy.ttlNote, "Murmur keeps three days here.")
     }
 
     func testSectionTitleTodayYesterdayAndOlder() {

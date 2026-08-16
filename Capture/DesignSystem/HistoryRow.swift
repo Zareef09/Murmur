@@ -22,10 +22,13 @@ struct HistoryRow: View {
             Button(action: { onDelete?() }) {
                 MurmurIcon(name: .trash, size: 19, title: "Delete")
                     .foregroundStyle(MurmurColor.attentionFg)
-                    .frame(width: reveal, height: 72)
+                    .frame(width: reveal)
+                    .frame(maxHeight: .infinity)
+                    .frame(minHeight: MurmurSpace.hitComfort)
             }
             .buttonStyle(.plain)
             .background(MurmurColor.attentionBg)
+            .accessibilityHidden(!swiped)
 
             rowContent
                 .background(MurmurColor.bgRaised)
@@ -40,7 +43,7 @@ struct HistoryRow: View {
                     }
                 }
         }
-        .frame(minHeight: 72)
+        .frame(minHeight: MurmurSpace.hitComfort)
         .clipped()
         .accessibilityAction(named: HistoryCopy.deleteTitle) {
             onDelete?()
@@ -50,17 +53,18 @@ struct HistoryRow: View {
     private var rowContent: some View {
         HStack(alignment: .center, spacing: MurmurSpace.space4) {
             DestinationBadge(destination: destination, variant: .glyph)
+                .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 3) {
                 Text(title)
                     .font(MurmurType.body)
                     .tracking(MurmurType.trackingBody)
                     .foregroundStyle(MurmurColor.textPrimary)
-                    .lineLimit(1)
+                    .lineLimit(2)
                 Text(subtitle)
                     .font(MurmurType.footnote)
                     .tracking(MurmurType.trackingFootnote)
                     .foregroundStyle(MurmurColor.textSecondary)
-                    .lineLimit(1)
+                    .lineLimit(2)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
 
@@ -74,10 +78,11 @@ struct HistoryRow: View {
             MurmurIcon(name: .chevronRight, size: 16)
                 .foregroundStyle(MurmurColor.textTertiary)
                 .opacity(0.6)
+                .accessibilityHidden(true)
         }
         .padding(.vertical, MurmurSpace.space4)
         .padding(.horizontal, MurmurSpace.space5)
-        .frame(minHeight: 72)
+        .frame(minHeight: MurmurSpace.hitComfort)
         .contentShape(Rectangle())
         .overlay(alignment: .bottom) {
             if divider {
@@ -85,6 +90,8 @@ struct HistoryRow: View {
             }
         }
         .accessibilityElement(children: .combine)
+        .accessibilityAddTraits(.isButton)
+        .accessibilityHint(HistoryCopy.openHint(for: destination))
     }
 
     private var swipeGesture: some Gesture {

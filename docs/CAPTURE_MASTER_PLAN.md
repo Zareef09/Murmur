@@ -189,21 +189,21 @@ Reminder vs Calendar (deterministic — spec §6.3): explicit time → Calendar 
 
 - [x] S82 — QuickCaptureIntent
 - [x] S83 — Siri phrases (AppShortcutsProvider)
-- [ ] S84 — Widget extension target
-- [ ] S85 — Lock-screen accessory widget
-- [ ] S86 — Control Center control (iOS 18+)
-- [ ] S87 — Back Tap shortcut + onboarding setup
+- [x] S84 — Widget extension target
+- [x] S85 — Lock-screen accessory widget
+- [x] S86 — Control Center control (iOS 18+)
+- [x] S87 — Back Tap shortcut + onboarding setup
 
 **Phase 7 — Polish and ship**
 
-- [ ] S88 — Capture screen parity
-- [ ] S89 — Remaining screens parity
-- [ ] S90 — Motion polish
-- [ ] S91 — Empty states + edge copy
-- [ ] S92 — App icon assets
-- [ ] S93 — Settings final polish
-- [ ] S94 — Onboarding final polish
-- [ ] S95 — Accessibility pass
+- [x] S88 — Capture screen parity
+- [x] S89 — Remaining screens parity
+- [x] S90 — Motion polish
+- [x] S91 — Empty states + edge copy
+- [x] S92 — App icon assets
+- [x] S93 — Settings final polish
+- [x] S94 — Onboarding final polish
+- [x] S95 — Accessibility pass
 - [ ] S96 — App Store prep
 - [ ] S97 — Link migrations to hosted Supabase
 - [ ] S98 — TestFlight build & submission
@@ -639,11 +639,68 @@ Do: donate natural phrases for quick capture / Murmur. Each phrase includes the 
 DoD: one donated shortcut; live “Hey Siri” needs device.  
 Done 16 Aug 2026: `CaptureShortcuts` phrases.
 
-**S84–S87** — Widget target (no Supabase in widget); lock screen; Control Center iOS 18+; Back Tap walkthrough (device).
+**S84 — Widget extension target**  
+Do: `Widgets/` target; App Group `group.app.murmur.capture`; start-listening flag only; no supabase-swift in the extension. Lock-screen families are S85.  
+DoD: Murmur embeds MurmurWidgets; flag uses the App Group; widget has no Supabase. Device: enable the App Group on the team.  
+Done 16 Aug 2026: `MurmurWidgets`; `Shared/QuickCaptureFlag`; App Group entitlements.
+
+**S85 — Lock-screen accessory widget**  
+Do: circular / inline / rectangular accessories; tap runs Quick capture (foreground + unlock). Waveform, not mic. Control Center is S86.  
+DoD: lock-screen families compiled; live add-to-Lock-Screen needs device.  
+Done 16 Aug 2026: accessory families on `QuickCaptureWidget`.
+
+**S86 — Control Center control (iOS 18+)**  
+Do: `ControlWidget` + `ControlWidgetButton` → Quick capture; waveform, not mic; `#available` so iOS 17 home/lock widgets still load.  
+DoD: compiles on iOS 17 deployment; Control Center add is device / iOS 18.  
+Done 16 Aug 2026: `QuickCaptureControl`; WidgetBundle split iOS 17 vs 18.
+
+**S87 — Back Tap walkthrough**  
+Do: in-app steps Accessibility → Touch → Back Tap wrapping Quick capture; Action Button note; onboarding Set it up + Settings Hands-free. Never write system Accessibility.  
+DoD: walkthrough compiles; live Back Tap assignment needs device.  
+Done 16 Aug 2026: `BackTapWalkthroughView`; Settings + onboarding entry.
 
 ### Phase 7
 
-**S88–S95** — Kit parity, motion, edge copy, icon, Settings/Onboarding polish, a11y.  
+**S88 — Capture screen parity**  
+Do: kit first-run / idle / listening / thinking / success+Undo; Light Well 240 owns Ember; History/Settings chrome. Remaining screens are S89.  
+DoD: previews for those states; live well still needs device.  
+Done 16 Aug 2026: `CaptureCopy` first-run; reserved SuccessBar slot.
+
+**S89 — Remaining screens parity**  
+Do: sign-in, confirmation (120 well), clarification listening/answered, history, settings account row (no email/id). Permissions Open Settings is S93. Motion is S90.  
+DoD: light + dark previews on those screens.  
+Done 16 Aug 2026: kit layout + `SettingsCopy` account row.
+
+**S90 — Motion polish**  
+Do: storyboard beats — idle→listening 620ms, thinking→done settle, confirm 380ms / 40pt / 0.985 / 8% dim, sheet exit 300ms, field stagger 40ms, Reduce Motion 1ms. No springs.  
+DoD: tokens tested; live morph needs device.  
+Done 16 Aug 2026: `MurmurMotion` storyboard constants; confirm scale/dim; breath freeze; haptics.
+
+**S91 — Empty states + edge copy**  
+Do: spec §12 facts — silence, permissions, locale, past date, garbled, Apple connection, settings cache, history 3-day empty, EventKit needed. No error/failed/invalid/!.  
+DoD: copy tests; Open Settings affordance is S93.  
+Done 16 Aug 2026: `HistoryCopy.ttlNote`; `ConfirmationCopy.pastDay`; `SettingsCopy.usingThisPhone`.
+
+**S92 — App icon assets**  
+Do: 1024 Home Screen / App Store well (light, dark, tinted); not a microphone; opaque marketing icons.  
+DoD: `AppIcon.appiconset` PNGs compile; Home Screen look needs device.  
+Done 16 Aug 2026: `Scripts/GenerateAppIcon.swift`; light/dark/tinted 1024.
+
+**S93 — Settings final polish**  
+Do: confirm toggle (already wired); live permission rows; Open Settings after a needed request; sign out. Do not add a default destination (open decision). Speak-questions is kit-only, not spec.  
+DoD: Settings shows mic, speech, reminders, calendar; needed rows use “Open Settings”; returning from Settings.app refreshes.  
+Done 16 Aug 2026: `SettingsCopy` permission strings; `PermissionRow.fixTitle`; Settings permissions group.
+
+**S94 — Onboarding final polish**  
+Do: kit tone; live permission priming; Open Settings if still needed; Continue to leave without all grants; Set it up still opens the walkthrough (Skip still skips).  
+DoD: three slides + Skip → Apple; denied access stays on slide 2 until Continue or Skip.  
+Done 16 Aug 2026: `OnboardingAccess`; live rows; Continue CTA after ask.
+
+**S95 — Accessibility pass**  
+Do: Dynamic Type (relative fonts, no clipped history/empty copy); AA for body + destination chips both modes; VoiceOver labels/hints; destination never color-only; well hit ≥ 96 when tappable.  
+DoD: tests for hit, contrast, destination copy; VO walkthrough needs device.  
+Done 16 Aug 2026: `AccessibilityCopy`; `CaptureBloom.isInteractive` + hit 96; button sm ≥ 44; history VO + DT; contrast tests.
+
 **S96** — App Store metadata; **ask monetization**; privacy label matches SECURITY.md.  
 **S97** — Hosted Supabase: push migrations, verify RLS, point xcconfig at prod.  
 **S98** — TestFlight.

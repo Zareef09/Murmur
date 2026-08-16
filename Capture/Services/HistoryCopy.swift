@@ -10,11 +10,17 @@ enum HistoryCopy {
     static let today = "Today"
     static let yesterday = "Yesterday"
     static let justNow = "Just now"
-    static let swipeHint = "Swipe a row aside to delete."
+    static let swipeHint = "Tap a row to swipe it aside, then delete."
     static let deleteTitle = "Remove this capture?"
     static let murmurOnly = "Delete from Murmur only"
     static let deleteNeeded = "This is still here. Try again."
     static let cancel = "Cancel"
+    /// Spec §12: empty history is three-day memory, not an archive.
+    static let ttlNote = "Murmur keeps three days here."
+
+    static func openHint(for destination: CaptureDestination) -> String {
+        destination == .event ? "Opens in Calendar" : "Opens in Reminders"
+    }
 
     static func alsoExternal(for destination: CaptureDestination) -> String {
         destination == .event ? "Also delete the event" : "Also delete the reminder"

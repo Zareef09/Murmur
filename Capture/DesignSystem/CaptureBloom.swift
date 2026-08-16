@@ -15,10 +15,13 @@ struct CaptureBloom: View {
     var level: CGFloat = 0
     var size: CGFloat = 240
     var label: String?
+    var isInteractive: Bool = true
     var onTap: () -> Void = {}
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var follow = AmplitudeFollow()
+    @State private var breathHold = BreathHold()
+    @State private var coreDip: CGFloat = 1
 
     var body: some View {
         VStack(spacing: MurmurSpace.space6) {
@@ -26,18 +29,36 @@ struct CaptureBloom: View {
                 well(at: context.date)
             }
             .frame(width: size, height: size)
+            .frame(width: hitSize, height: hitSize)
             .contentShape(Circle())
-            .onTapGesture(perform: onTap)
-            .accessibilityAddTraits(.isButton)
-            .accessibilityLabel(label ?? "Capture a thought")
+            .onTapGesture {
+                guard isInteractive else { return }
+                dipCore()
+                MurmurHaptics.wellTap()
+                onTap()
+            }
+            .accessibilityElement()
+            .accessibilityLabel(label ?? AccessibilityCopy.captureWell)
+            .accessibilityHint(isInteractive && state == .idle ? AccessibilityCopy.wellHint : "")
+            .accessibilityAddTraits(isInteractive ? .isButton : [])
+            .accessibilityHidden(!isInteractive && label == nil)
 
             if let label {
                 Text(label)
                     .font(MurmurType.subhead)
                     .tracking(0.3)
                     .foregroundStyle(MurmurColor.textTertiary)
+                    .accessibilityHidden(true)
             }
         }
+    }
+
+    static func hitSize(visual: CGFloat, interactive: Bool) -> CGFloat {
+        interactive ? max(visual, MurmurSpace.hitHero) : visual
+    }
+
+    private var hitSize: CGFloat {
+        Self.hitSize(visual: size, interactive: isInteractive)
     }
 
     private func well(at date: Date) -> some View {
@@ -57,10 +78,15 @@ struct CaptureBloom: View {
             checkmark
         }
         .frame(width: size, height: size)
-        .animation(
-            MurmurMotion.animation(.exhale, .slow, reduceMotion: reduceMotion),
-            value: state
-        )
+        .animation(stateMorph, value: state)
+    }
+
+    private var stateMorph: Animation {
+        if state == .done {
+            MurmurMotion.animation(.settle, .slow, reduceMotion: reduceMotion)
+        } else {
+            MurmurMotion.animation(.exhale, .slow, reduceMotion: reduceMotion)
+        }
     }
 
     private func bloom(level: CGFloat) -> some View {
@@ -82,13 +108,17 @@ struct CaptureBloom: View {
 
     private func ring(percent: CGFloat, weight: CGFloat, date: Date, lag: Double, level: CGFloat) -> some View {
         let inset = size * (1 - percent) / 2
-        let breath = idleBreath(at: date, lagMs: lag * 4)
         let lagged = state == .listening ? follow.lagged(lag, at: date) : level
+        let hold = breathHold.tick(
+            lag: lag,
+            live: idleBreath(at: date, lagMs: lag * 4),
+            idle: state == .idle
+        )
         return Circle()
             .strokeBorder(MurmurColor.accent, lineWidth: weight)
             .padding(inset)
-            .scaleEffect(ringScale(lagged) * (state == .idle ? breath.scale : 1))
-            .opacity(ringOpacity(lagged) * (state == .idle ? breath.opacity : 1))
+            .scaleEffect(ringScale(lagged) * hold.scale)
+            .opacity(ringOpacity(lagged) * hold.opacity)
     }
 
     private func thinkingArc(spin: Double) -> some View {
@@ -104,7 +134,7 @@ struct CaptureBloom: View {
         Circle()
             .fill(MurmurColor.accent)
             .padding(size * 0.38)
-            .scaleEffect(coreScale(level))
+            .scaleEffect(coreScale(level) * coreDip)
             .opacity(coreOpacity(level))
             .murmurShadow(state == .listening ? .listening : .none)
     }
@@ -115,7 +145,7 @@ struct CaptureBloom: View {
             .opacity(state == .done ? 1 : 0)
             .animation(
                 MurmurMotion.animation(.exhale, .normal, reduceMotion: reduceMotion).delay(
-                    reduceMotion ? 0 : 0.12
+                    reduceMotion ? 0 : MurmurMotion.checkDelay
                 ),
                 value: state == .done
             )
@@ -172,24 +202,44 @@ struct CaptureBloom: View {
         }
     }
 
-    private func idleBreath(at date: Date, lagMs: Double) -> Breath {
+    private func dipCore() {
+        coreDip = MurmurMotion.coreTapDip
+        withAnimation(MurmurMotion.animation(.exhale, .instant, reduceMotion: reduceMotion)) {
+            coreDip = 1
+        }
+    }
+
+    private func idleBreath(at date: Date, lagMs: Double) -> BloomBreath {
         guard state == .idle, !reduceMotion else {
-            return Breath(scale: 1, opacity: 1)
+            return BloomBreath(scale: 1, opacity: 1)
         }
         let period = MurmurMotion.seconds(.breath, reduceMotion: false)
         let t = date.timeIntervalSinceReferenceDate - lagMs / 1000
         let wave = (1 - cos(t * 2 * .pi / period)) / 2
-        return Breath(scale: 1 + 0.045 * wave, opacity: 0.82 + 0.18 * wave)
+        return BloomBreath(scale: 1 + 0.045 * wave, opacity: 0.82 + 0.18 * wave)
     }
 
     private func thinkingSpin(at date: Date) -> Double {
         guard state == .thinking, !reduceMotion else { return -90 }
         return date.timeIntervalSinceReferenceDate / 2.6 * 360 - 90
     }
+}
 
-    private struct Breath {
-        var scale: CGFloat
-        var opacity: Double
+/// Freeze idle breath when leaving idle so the loop does not snap back.
+private struct BloomBreath {
+    var scale: CGFloat
+    var opacity: Double
+}
+
+private final class BreathHold {
+    private var held: [Double: BloomBreath] = [:]
+
+    func tick(lag: Double, live: BloomBreath, idle: Bool) -> BloomBreath {
+        if idle {
+            held[lag] = live
+            return live
+        }
+        return held[lag] ?? BloomBreath(scale: 1, opacity: 1)
     }
 }
 

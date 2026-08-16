@@ -1,4 +1,5 @@
 import AppIntents
+import WidgetKit
 import XCTest
 @testable import Murmur
 
@@ -14,6 +15,7 @@ final class QuickCaptureFlagTests: XCTestCase {
     }
 
     func testArmAndConsumeAreABoolOnly() {
+        XCTAssertEqual(QuickCaptureFlag.appGroupID, "group.app.murmur.capture")
         XCTAssertFalse(QuickCaptureFlag.isArmed)
         QuickCaptureFlag.arm()
         XCTAssertTrue(QuickCaptureFlag.isArmed)
@@ -21,6 +23,36 @@ final class QuickCaptureFlagTests: XCTestCase {
         XCTAssertFalse(QuickCaptureFlag.isArmed)
         XCTAssertEqual(QuickCaptureIntent.openAppWhenRun, true)
         XCTAssertFalse(LoggingPolicy.looksLikeBannedContent("quick capture"))
+        XCTAssertFalse(LoggingPolicy.looksLikeBannedContent(QuickCaptureFlag.appGroupID))
+    }
+}
+
+final class QuickCaptureWidgetSupportTests: XCTestCase {
+    func testLockScreenFamiliesAreAccessories() {
+        XCTAssertTrue(QuickCaptureWidgetSupport.lockScreen.contains(.accessoryCircular))
+        XCTAssertTrue(QuickCaptureWidgetSupport.lockScreen.contains(.accessoryInline))
+        XCTAssertTrue(QuickCaptureWidgetSupport.lockScreen.contains(.accessoryRectangular))
+        XCTAssertFalse(QuickCaptureWidgetSupport.lockScreen.contains(.systemSmall))
+        XCTAssertEqual(Set(QuickCaptureWidgetSupport.lockScreen).isSubset(of: Set(QuickCaptureWidgetSupport.families)), true)
+    }
+}
+
+final class QuickCaptureControlSupportTests: XCTestCase {
+    func testControlUsesWaveformNotMic() {
+        XCTAssertEqual(QuickCaptureControlSupport.symbolName, "waveform")
+        XCTAssertNotEqual(QuickCaptureControlSupport.symbolName, "mic")
+        XCTAssertEqual(QuickCaptureControlSupport.title, "Quick capture")
+        XCTAssertTrue(QuickCaptureControlSupport.kind.hasPrefix("app.murmur.capture"))
+        XCTAssertEqual(QuickCaptureIntent.openAppWhenRun, true)
+    }
+
+    func testControlIsIOS18Only() {
+        if #available(iOS 18.0, *) {
+            XCTAssertTrue(QuickCaptureControlSupport.isRuntimeAvailable)
+            _ = QuickCaptureControl()
+        } else {
+            XCTAssertFalse(QuickCaptureControlSupport.isRuntimeAvailable)
+        }
     }
 }
 

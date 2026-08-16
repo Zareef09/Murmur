@@ -15,7 +15,7 @@ struct MurmurButton: View {
 
         var minHeight: CGFloat {
             switch self {
-            case .sm: 40
+            case .sm: MurmurSpace.hitMin
             case .md: 52
             case .lg: 60
             }

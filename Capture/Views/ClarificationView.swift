@@ -14,8 +14,9 @@ struct ClarificationView: View {
 
     private var bloomState: CaptureBloom.BloomState {
         switch model.state {
-        case .listening, .clarifying: .listening
+        case .listening: .listening
         case .processing: .thinking
+        case .clarifying: .listening
         default: .idle
         }
     }
@@ -44,6 +45,7 @@ struct ClarificationView: View {
             HStack(spacing: 8) {
                 MurmurIcon(name: .volume, size: 14)
                     .foregroundStyle(MurmurColor.textTertiary)
+                    .accessibilityHidden(true)
                 Text(ClarifyCopy.asked)
                     .font(MurmurType.caption)
                     .tracking(MurmurType.trackingCaption)
@@ -56,6 +58,7 @@ struct ClarificationView: View {
                 .foregroundStyle(MurmurColor.textPrimary)
                 .fixedSize(horizontal: false, vertical: true)
                 .frame(maxWidth: 20 * 16, alignment: .leading)
+                .accessibilityAddTraits(.isHeader)
         }
     }
 
@@ -64,15 +67,18 @@ struct ClarificationView: View {
             CaptureBloom(
                 state: bloomState,
                 level: model.state == .listening ? model.listenLevel : 0,
-                size: 64
+                size: 64,
+                isInteractive: false
             )
             .allowsHitTesting(false)
             TranscriptView(
                 text: model.transcriptText,
                 partial: model.transcriptPartial,
-                placeholder: "I'm listening…",
-                alignment: .leading
+                placeholder: CaptureCopy.listeningPlaceholder,
+                alignment: .leading,
+                compact: true
             )
+            .frame(maxWidth: 18 * 12, alignment: .leading)
         }
     }
 
@@ -121,6 +127,22 @@ struct ClarificationView: View {
         clarificationKind: .destination
     )
     model.speechFact = ClarifyCopy.destination
+    return ClarificationPreviewHost(model: model)
+        .preferredColorScheme(.light)
+}
+
+#Preview("Clarify · answered · light") {
+    let model = CaptureViewModel()
+    model.debugSetState(.processing)
+    model.debugArmClarificationLoop()
+    model.pendingIntent = ParsedIntent(
+        rawTranscript: "meet Friday or Saturday",
+        taskText: "meet",
+        needsClarification: true,
+        clarificationKind: .date
+    )
+    model.speechFact = ClarifyCopy.whichDay(first: "Friday", second: "Saturday")
+    model.transcriptText = "Friday, the early one"
     return ClarificationPreviewHost(model: model)
         .preferredColorScheme(.light)
 }

@@ -8,11 +8,13 @@
 
 /* Begin PBXBuildFile section */
 		F1A2B3C4D5E608192A3B0010 /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = F1A2B3C4D5E608192A3B0011 /* Supabase */; };
+		F1A2B3C4D5E608192A3B003E /* MurmurWidgets.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = F1A2B3C4D5E608192A3B0030 /* MurmurWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		F1A2B3C4D5E608192A3B0001 /* Murmur.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Murmur.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F1A2B3C4D5E608192A3B0020 /* MurmurTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MurmurTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		F1A2B3C4D5E608192A3B0030 /* MurmurWidgets.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = MurmurWidgets.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		F1A2B3C4D5E608192A3B0013 /* Supabase.debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Supabase.debug.xcconfig; sourceTree = "<group>"; };
 		F1A2B3C4D5E608192A3B0014 /* Supabase.release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Supabase.release.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -24,6 +26,13 @@
 				Info.plist,
 			);
 			target = F1A2B3C4D5E608192A3B0006 /* Murmur */;
+		};
+		F1A2B3C4D5E608192A3B003D /* Exceptions for "Widgets" folder in "MurmurWidgets" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = F1A2B3C4D5E608192A3B0032 /* MurmurWidgets */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
@@ -39,6 +48,19 @@
 		F1A2B3C4D5E608192A3B0021 /* MurmurTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = MurmurTests;
+			sourceTree = "<group>";
+		};
+		F1A2B3C4D5E608192A3B003C /* Shared */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Shared;
+			sourceTree = "<group>";
+		};
+		F1A2B3C4D5E608192A3B0031 /* Widgets */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				F1A2B3C4D5E608192A3B003D /* Exceptions for "Widgets" folder in "MurmurWidgets" target */,
+			);
+			path = Widgets;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -59,6 +81,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		F1A2B3C4D5E608192A3B0033 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -66,6 +95,8 @@
 			isa = PBXGroup;
 			children = (
 				F1A2B3C4D5E608192A3B0002 /* Capture */,
+				F1A2B3C4D5E608192A3B003C /* Shared */,
+				F1A2B3C4D5E608192A3B0031 /* Widgets */,
 				F1A2B3C4D5E608192A3B0021 /* MurmurTests */,
 				F1A2B3C4D5E608192A3B0016 /* Config */,
 				F1A2B3C4D5E608192A3B0005 /* Products */,
@@ -77,6 +108,7 @@
 			children = (
 				F1A2B3C4D5E608192A3B0001 /* Murmur.app */,
 				F1A2B3C4D5E608192A3B0020 /* MurmurTests.xctest */,
+				F1A2B3C4D5E608192A3B0030 /* MurmurWidgets.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -100,13 +132,16 @@
 				F1A2B3C4D5E608192A3B000A /* Sources */,
 				F1A2B3C4D5E608192A3B0003 /* Frameworks */,
 				F1A2B3C4D5E608192A3B000B /* Resources */,
+				F1A2B3C4D5E608192A3B0036 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				F1A2B3C4D5E608192A3B0037 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				F1A2B3C4D5E608192A3B0002 /* Capture */,
+				F1A2B3C4D5E608192A3B003C /* Shared */,
 			);
 			name = Murmur;
 			packageProductDependencies = (
@@ -139,6 +174,29 @@
 			productReference = F1A2B3C4D5E608192A3B0020 /* MurmurTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
+		F1A2B3C4D5E608192A3B0032 /* MurmurWidgets */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F1A2B3C4D5E608192A3B003B /* Build configuration list for PBXNativeTarget "MurmurWidgets" */;
+			buildPhases = (
+				F1A2B3C4D5E608192A3B0034 /* Sources */,
+				F1A2B3C4D5E608192A3B0033 /* Frameworks */,
+				F1A2B3C4D5E608192A3B0035 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				F1A2B3C4D5E608192A3B0031 /* Widgets */,
+				F1A2B3C4D5E608192A3B003C /* Shared */,
+			);
+			name = MurmurWidgets;
+			packageProductDependencies = (
+			);
+			productName = MurmurWidgets;
+			productReference = F1A2B3C4D5E608192A3B0030 /* MurmurWidgets.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -167,6 +225,9 @@
 						CreatedOnToolsVersion = 26.4;
 						TestTargetID = F1A2B3C4D5E608192A3B0006;
 					};
+					F1A2B3C4D5E608192A3B0032 = {
+						CreatedOnToolsVersion = 26.4;
+					};
 				};
 			};
 			buildConfigurationList = F1A2B3C4D5E608192A3B0009 /* Build configuration list for PBXProject "Murmur" */;
@@ -188,6 +249,7 @@
 			targets = (
 				F1A2B3C4D5E608192A3B0006 /* Murmur */,
 				F1A2B3C4D5E608192A3B0022 /* MurmurTests */,
+				F1A2B3C4D5E608192A3B0032 /* MurmurWidgets */,
 			);
 		};
 /* End PBXProject section */
@@ -200,6 +262,13 @@
 			remoteGlobalIDString = F1A2B3C4D5E608192A3B0006;
 			remoteInfo = Murmur;
 		};
+		F1A2B3C4D5E608192A3B0038 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F1A2B3C4D5E608192A3B0008 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F1A2B3C4D5E608192A3B0032;
+			remoteInfo = MurmurWidgets;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXTargetDependency section */
@@ -207,6 +276,11 @@
 			isa = PBXTargetDependency;
 			target = F1A2B3C4D5E608192A3B0006 /* Murmur */;
 			targetProxy = F1A2B3C4D5E608192A3B0027 /* PBXContainerItemProxy */;
+		};
+		F1A2B3C4D5E608192A3B0037 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F1A2B3C4D5E608192A3B0032 /* MurmurWidgets */;
+			targetProxy = F1A2B3C4D5E608192A3B0038 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -225,6 +299,27 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		F1A2B3C4D5E608192A3B0035 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+
+/* Begin PBXCopyFilesBuildPhase section */
+		F1A2B3C4D5E608192A3B0036 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				F1A2B3C4D5E608192A3B003E /* MurmurWidgets.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		F1A2B3C4D5E608192A3B000A /* Sources */ = {
@@ -235,6 +330,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		F1A2B3C4D5E608192A3B0023 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F1A2B3C4D5E608192A3B0034 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -252,7 +354,7 @@
 				CLANG_ENABLE_OBJC_ARC = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = KCKK723R7B;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -277,7 +379,7 @@
 				CLANG_ENABLE_OBJC_ARC = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = KCKK723R7B;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -299,7 +401,7 @@
 				CODE_SIGN_ENTITLEMENTS = Capture/Murmur.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = KCKK723R7B;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Capture/Info.plist;
@@ -333,7 +435,7 @@
 				CODE_SIGN_ENTITLEMENTS = Capture/Murmur.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = KCKK723R7B;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Capture/Info.plist;
@@ -364,7 +466,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = KCKK723R7B;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -390,7 +492,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = KCKK723R7B;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -410,7 +512,64 @@
 			};
 			name = Release;
 		};
-/* End XCBuildConfiguration section */
+		F1A2B3C4D5E608192A3B0039 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = Widgets/MurmurWidgets.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = KCKK723R7B;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Widgets/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Murmur;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = app.murmur.capture.widgets;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		F1A2B3C4D5E608192A3B003A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = Widgets/MurmurWidgets.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = KCKK723R7B;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Widgets/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Murmur;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = app.murmur.capture.widgets;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
 
 /* Begin XCConfigurationList section */
 		F1A2B3C4D5E608192A3B0007 /* Build configuration list for PBXNativeTarget "Murmur" */ = {
@@ -436,6 +595,15 @@
 			buildConfigurations = (
 				F1A2B3C4D5E608192A3B0028 /* Debug */,
 				F1A2B3C4D5E608192A3B0029 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F1A2B3C4D5E608192A3B003B /* Build configuration list for PBXNativeTarget "MurmurWidgets" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F1A2B3C4D5E608192A3B0039 /* Debug */,
+				F1A2B3C4D5E608192A3B003A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

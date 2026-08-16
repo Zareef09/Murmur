@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// Session 20 sign-in screen. Colors from `MurmurColor`.
+/// Sign in with Apple. Kit voice; no email, no celebration.
 struct SignInView: View {
     @Environment(AuthService.self) private var auth
     @State private var isWorking = false
@@ -12,24 +12,28 @@ struct SignInView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            Spacer()
-            Wordmark()
-                .padding(.bottom, MurmurSpace.stackSection)
+            Spacer(minLength: 0)
+            VStack(spacing: MurmurSpace.space8) {
+                AppIconView(size: 84)
+                Wordmark()
+            }
+            .padding(.bottom, MurmurSpace.stackSection)
+
             VStack(alignment: .leading, spacing: MurmurSpace.stackTight) {
-                Text("Say what you need to remember.")
-                    .font(MurmurType.headline)
-                    .tracking(MurmurType.trackingHeadline)
+                Text(CaptureCopy.firstRunTitle)
+                    .font(MurmurType.title)
+                    .tracking(MurmurType.trackingTitle)
                     .foregroundStyle(MurmurColor.textPrimary)
-                Text("Murmur files it as a reminder or an event. You can always check before it saves.")
-                    .font(MurmurType.body)
-                    .tracking(MurmurType.trackingBody)
+                Text(CaptureCopy.firstRunFootnote)
+                    .font(MurmurType.callout)
+                    .tracking(MurmurType.trackingCallout)
                     .foregroundStyle(MurmurColor.textSecondary)
                     .fixedSize(horizontal: false, vertical: true)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-            Spacer()
+            Spacer(minLength: 0)
             MurmurButton(
-                title: "Continue with Apple",
+                title: AuthCopy.continueWithApple,
                 systemIcon: "apple.logo",
                 fullWidth: true,
                 isDisabled: isWorking
@@ -49,7 +53,7 @@ struct SignInView: View {
         .padding(.horizontal, MurmurSpace.gutterScreen)
         .padding(.bottom, MurmurSpace.stackLoose)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .murmurCanvas(wash: false)
+        .murmurCanvas(wash: true)
     }
 
     @MainActor

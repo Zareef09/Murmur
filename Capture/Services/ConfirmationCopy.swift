@@ -1,3 +1,4 @@
+import CoreGraphics
 import Foundation
 
 /// Confirmation sheet copy. Sentence case. Fields stay facts, never “error”.
@@ -10,10 +11,13 @@ enum ConfirmationCopy {
     static let whenLabel = "When"
     static let goesToLabel = "Goes to"
     static let noDate = "No date"
+    static let pastDay = "This day has passed."
     static let includeTime = "Include time"
     static let dateOnly = "Date only"
     static let reminders = "Reminders"
     static let calendar = "Calendar"
+    /// Brief: 120 on the confirmation header. Capture home stays 240.
+    static let headerBloomSize: CGFloat = 120
 
     static func saveTitle(for destination: CaptureDestination) -> String {
         destination == .event ? "Save event" : "Save reminder"
@@ -40,6 +44,15 @@ enum ConfirmationWhenFormat {
             Date.FormatStyle(date: .omitted, time: .shortened).locale(locale)
         )
         return "\(day), \(time)"
+    }
+
+    static func isPast(
+        date: Date?,
+        now: Date = Date(),
+        calendar: Calendar = .current
+    ) -> Bool {
+        guard let date else { return false }
+        return calendar.startOfDay(for: date) < calendar.startOfDay(for: now)
     }
 
     private static func dayPhrase(

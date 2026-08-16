@@ -7,6 +7,18 @@ enum MurmurMotion {
     static let undoWindow: TimeInterval = 5
 
     static let pressScale: CGFloat = 0.982
+    /// Storyboard: tap dips the core 4%.
+    static let coreTapDip: CGFloat = 0.96
+    /// Storyboard: capture home while the sheet is up.
+    static let confirmScale: CGFloat = 0.985
+    static let confirmDim: Double = 0.08
+    /// Storyboard: sheet rises 40px; transcript placeholder rises 8px.
+    static let sheetRise: CGFloat = 40
+    static let transcriptRise: CGFloat = 8
+    static let fieldStagger: TimeInterval = 0.040
+    static let checkDelay: TimeInterval = 0.120
+    /// Storyboard: sheet dismiss, not a token in motion.css.
+    static let sheetExit: TimeInterval = 0.300
 
     enum Curve {
         case exhale
@@ -39,7 +51,22 @@ enum MurmurMotion {
     }
 
     static func animation(_ curve: Curve, _ duration: Duration, reduceMotion: Bool) -> Animation {
-        let time = seconds(duration, reduceMotion: reduceMotion)
+        timing(curve, seconds(duration, reduceMotion: reduceMotion))
+    }
+
+    static func animation(_ curve: Curve, seconds time: TimeInterval, reduceMotion: Bool) -> Animation {
+        timing(curve, reduceMotion ? 0.001 : time)
+    }
+
+    static func sheetInsertion(reduceMotion: Bool) -> Animation {
+        animation(.exhale, .normal, reduceMotion: reduceMotion)
+    }
+
+    static func sheetRemoval(reduceMotion: Bool) -> Animation {
+        animation(.exit, seconds: sheetExit, reduceMotion: reduceMotion)
+    }
+
+    private static func timing(_ curve: Curve, _ time: TimeInterval) -> Animation {
         switch curve {
         case .exhale:
             return .timingCurve(0.22, 0.61, 0.24, 1, duration: time)
@@ -50,5 +77,15 @@ enum MurmurMotion {
         case .exit:
             return .timingCurve(0.4, 0, 0.7, 0.3, duration: time)
         }
+    }
+}
+
+extension AnyTransition {
+    /// Confirmation: 40pt rise in, same offset out. No spring.
+    static var murmurSheet: AnyTransition {
+        .asymmetric(
+            insertion: .offset(y: MurmurMotion.sheetRise).combined(with: .opacity),
+            removal: .offset(y: MurmurMotion.sheetRise).combined(with: .opacity)
+        )
     }
 }

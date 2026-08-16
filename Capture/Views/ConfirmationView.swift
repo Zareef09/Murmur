@@ -14,6 +14,8 @@ struct ConfirmationView: View {
     var startsEditing: ConfirmationEditField?
 
     @State private var editing: ConfirmationEditField?
+    @State private var revealStep = 0
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     private var destination: CaptureDestination {
         intent.destination ?? .reminder
@@ -29,10 +31,10 @@ struct ConfirmationView: View {
 
             sheet
                 .murmurShadow(.sheet)
-                .transition(.move(edge: .bottom))
         }
         .accessibilityAddTraits(.isModal)
         .onAppear {
+            revealFields()
             if editing == nil {
                 if startsEditing == .when {
                     beginWhenEdit()
@@ -51,8 +53,10 @@ struct ConfirmationView: View {
                 .accessibilityHidden(true)
 
             header
+                .opacity(revealStep >= 1 ? 1 : 0)
 
             fieldGroup
+                .opacity(revealStep >= 2 ? 1 : 0)
 
             VStack(spacing: MurmurSpace.space3) {
                 MurmurButton(
@@ -68,6 +72,7 @@ struct ConfirmationView: View {
                     action: onCancel
                 )
             }
+            .opacity(revealStep >= 3 ? 1 : 0)
         }
         .padding(.top, MurmurSpace.space5)
         .padding(.horizontal, MurmurSpace.gutterSheet)
@@ -89,7 +94,7 @@ struct ConfirmationView: View {
 
     private var header: some View {
         HStack(alignment: .center, spacing: MurmurSpace.space4) {
-            CaptureBloom(state: .done, size: 44)
+            CaptureBloom(state: .done, size: ConfirmationCopy.headerBloomSize, isInteractive: false)
                 .allowsHitTesting(false)
                 .accessibilityHidden(true)
 
@@ -109,48 +114,58 @@ struct ConfirmationView: View {
     }
 
     private var fieldGroup: some View {
-        VStack(spacing: 0) {
-            EditableField(
-                label: ConfirmationCopy.titleLabel,
-                value: $intent.taskText,
-                isEditing: editing == .title,
-                onPress: { editing = .title }
-            )
-            divider
-            EditableField(
-                label: ConfirmationCopy.whenLabel,
-                value: .constant(whenValue),
-                placeholder: ConfirmationCopy.noDate,
-                icon: .clock,
-                isEditing: editing == .when,
-                onPress: { beginWhenEdit() }
-            ) {
-                ConfirmationWhenEditor(
-                    date: $intent.date,
-                    hasExplicitTime: $intent.hasExplicitTime,
-                    destination: destination,
-                    onCleared: { editing = nil }
+        VStack(alignment: .leading, spacing: MurmurSpace.space3) {
+            VStack(spacing: 0) {
+                EditableField(
+                    label: ConfirmationCopy.titleLabel,
+                    value: $intent.taskText,
+                    isEditing: editing == .title,
+                    onPress: { editing = .title }
                 )
+                divider
+                EditableField(
+                    label: ConfirmationCopy.whenLabel,
+                    value: .constant(whenValue),
+                    placeholder: ConfirmationCopy.noDate,
+                    icon: .clock,
+                    isEditing: editing == .when,
+                    onPress: { beginWhenEdit() }
+                ) {
+                    ConfirmationWhenEditor(
+                        date: $intent.date,
+                        hasExplicitTime: $intent.hasExplicitTime,
+                        destination: destination,
+                        onCleared: { editing = nil }
+                    )
+                }
+                divider
+                EditableField(
+                    label: ConfirmationCopy.goesToLabel,
+                    value: destinationBinding,
+                    icon: destination == .event ? .calendar : .bell,
+                    isEditing: editing == .destination,
+                    onPress: { editing = .destination }
+                ) {
+                    DestinationToggle(value: destinationToggle, size: .sm)
+                        .padding(.top, 6)
+                }
             }
-            divider
-            EditableField(
-                label: ConfirmationCopy.goesToLabel,
-                value: destinationBinding,
-                icon: destination == .event ? .calendar : .bell,
-                isEditing: editing == .destination,
-                onPress: { editing = .destination }
-            ) {
-                DestinationToggle(value: destinationToggle, size: .sm)
-                    .padding(.top, 6)
+            .padding(6)
+            .background(MurmurColor.bgRaised)
+            .overlay {
+                RoundedRectangle(cornerRadius: MurmurRadius.lg, style: .continuous)
+                    .strokeBorder(MurmurColor.lineHairline, lineWidth: MurmurRadius.strokeHairline)
+            }
+            .clipShape(RoundedRectangle(cornerRadius: MurmurRadius.lg, style: .continuous))
+
+            if ConfirmationWhenFormat.isPast(date: intent.date) {
+                Text(ConfirmationCopy.pastDay)
+                    .font(MurmurType.footnote)
+                    .tracking(MurmurType.trackingFootnote)
+                    .foregroundStyle(MurmurColor.textTertiary)
+                    .padding(.horizontal, MurmurSpace.space5)
             }
         }
-        .padding(6)
-        .background(MurmurColor.bgRaised)
-        .overlay {
-            RoundedRectangle(cornerRadius: MurmurRadius.lg, style: .continuous)
-                .strokeBorder(MurmurColor.lineHairline, lineWidth: MurmurRadius.strokeHairline)
-        }
-        .clipShape(RoundedRectangle(cornerRadius: MurmurRadius.lg, style: .continuous))
     }
 
     private var divider: some View {
@@ -164,6 +179,22 @@ struct ConfirmationView: View {
             date: intent.date,
             hasExplicitTime: intent.hasExplicitTime
         )
+    }
+
+    private func revealFields() {
+        if reduceMotion {
+            revealStep = 3
+            return
+        }
+        revealStep = 0
+        Task { @MainActor in
+            for step in 1...3 {
+                try? await Task.sleep(nanoseconds: UInt64(MurmurMotion.fieldStagger * 1_000_000_000))
+                withAnimation(MurmurMotion.animation(.exhale, .quick, reduceMotion: reduceMotion)) {
+                    revealStep = step
+                }
+            }
+        }
     }
 
     private func beginWhenEdit() {
@@ -249,6 +280,19 @@ struct ConfirmationView: View {
         startsEditing: .when
     )
     .preferredColorScheme(.light)
+}
+
+#Preview("Confirm · fixing · dark") {
+    ConfirmationPreviewHost(
+        intent: ParsedIntent(
+            rawTranscript: "call mom",
+            taskText: "call mom",
+            destination: .reminder,
+            confidence: 0.85
+        ),
+        startsEditing: .title
+    )
+    .preferredColorScheme(.dark)
 }
 
 #Preview("Confirm · no date · dark") {

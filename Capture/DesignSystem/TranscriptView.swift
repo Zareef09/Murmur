@@ -26,16 +26,30 @@ struct TranscriptView: View {
     var partial: String = ""
     var placeholder: String = "I'm listening…"
     var alignment: Alignment = .center
+    /// Thinking uses secondary; success uses a slightly smaller size (kit 22).
+    var dimmed: Bool = false
+    var compact: Bool = false
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var risen = false
 
     var body: some View {
         (settled + inflight)
-            .font(MurmurType.transcript)
-            .tracking(MurmurType.trackingTranscript)
+            .font(compact ? MurmurType.headline : MurmurType.transcript)
+            .tracking(compact ? MurmurType.trackingHeadline : MurmurType.trackingTranscript)
             .multilineTextAlignment(alignment.text)
             .fixedSize(horizontal: false, vertical: true)
             .frame(maxWidth: 30 * 13, alignment: alignment.frame)
+            .offset(y: risen ? 0 : MurmurMotion.transcriptRise)
+            .onAppear {
+                if reduceMotion {
+                    risen = true
+                } else {
+                    withAnimation(MurmurMotion.animation(.exhale, .slow, reduceMotion: reduceMotion)) {
+                        risen = true
+                    }
+                }
+            }
             .animation(
                 MurmurMotion.animation(.exhale, .normal, reduceMotion: reduceMotion),
                 value: isEmpty
@@ -55,7 +69,7 @@ struct TranscriptView: View {
 
     private var settled: Text {
         Text(isEmpty ? placeholder : text)
-            .foregroundColor(isEmpty ? MurmurColor.textTertiary : MurmurColor.textPrimary)
+            .foregroundColor(isEmpty ? MurmurColor.textTertiary : (dimmed ? MurmurColor.textSecondary : MurmurColor.textPrimary))
     }
 
     private var inflight: Text {

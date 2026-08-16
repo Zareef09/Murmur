@@ -13,6 +13,8 @@ struct Wordmark: View {
     var size: CGFloat = 28
     var tone: Tone = .primary
     var showsDot: Bool = true
+    /// Em units. Capture chrome uses 0.16; elsewhere 0.13.
+    var trackingEm: CGFloat = 0.13
 
     private var cap: CGFloat { max(size, 18) }
 
@@ -20,7 +22,7 @@ struct Wordmark: View {
         HStack(alignment: .firstTextBaseline, spacing: cap * 0.16) {
             Text("murmur")
                 .font(MurmurType.core(size: cap, relativeTo: .title, weight: .light))
-                .tracking(cap * 0.13)
+                .tracking(cap * trackingEm)
                 .foregroundStyle(color)
             if showsDot {
                 Circle()

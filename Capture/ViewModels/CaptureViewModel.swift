@@ -17,6 +17,8 @@ final class CaptureViewModel {
     var pendingIntent: ParsedIntent?
     var successMessage: String?
     var successDestination: CaptureDestination?
+    /// Quiet fact when settings could not refresh. Capture still works.
+    var settingsFact: String?
 
     private let settingsSync: SettingsSyncing
     private let speech: SpeechServicing
@@ -33,6 +35,8 @@ final class CaptureViewModel {
     private var successTask: Task<Void, Never>?
     private var lastSave: LastSave?
     private let undoWindow: TimeInterval
+    private let defaults: UserDefaults
+    private(set) var hasLeftFirstRun: Bool
     /// Spec: one spoken clarification, then confirmation.
     private var usedClarificationLoop = false
     private var isClarificationListen = false
@@ -58,6 +62,7 @@ final class CaptureViewModel {
         eventKit: EventKitServicing = EventKitService(),
         synth: SpeechSynthServicing = SpeechSynthService(),
         modelContext: ModelContext? = nil,
+        defaults: UserDefaults = .standard,
         undoWindow: TimeInterval = MurmurMotion.undoWindow
     ) {
         self.settingsSync = settingsSync
@@ -68,6 +73,8 @@ final class CaptureViewModel {
         self.eventKit = eventKit
         self.synth = synth
         self.modelContext = modelContext
+        self.defaults = defaults
+        self.hasLeftFirstRun = defaults.bool(forKey: CaptureFirstRun.defaultsKey)
         self.undoWindow = undoWindow
         self.speech.onTranscriptChange = { [weak self] in
             self?.pullTranscript()
@@ -110,6 +117,7 @@ final class CaptureViewModel {
             lastSave = nil
             successMessage = nil
             successDestination = nil
+            settingsFact = nil
             synth.stop()
         }
     }
@@ -120,8 +128,10 @@ final class CaptureViewModel {
         do {
             try await settingsSync.fetchRemote()
             alwaysConfirm = settingsSync.alwaysConfirm
+            settingsFact = nil
         } catch {
             alwaysConfirm = settingsSync.alwaysConfirm
+            settingsFact = SettingsCopy.usingThisPhone
         }
     }
 
@@ -133,6 +143,11 @@ final class CaptureViewModel {
     /// Listening and later capture actions must no-op while signed out.
     var canCapture: Bool {
         state != .signedOut
+    }
+
+    /// Kit first-run until the well has started a listen on this install.
+    var showsFirstRun: Bool {
+        canCapture && state == .idle && !hasLeftFirstRun
     }
 
     func tapWell() {
@@ -221,6 +236,8 @@ final class CaptureViewModel {
         listenLevel = 0
         do {
             try await speech.start()
+            hasLeftFirstRun = true
+            defaults.set(true, forKey: CaptureFirstRun.defaultsKey)
             state = .listening
             LoggingPolicy.log(.captureState(.listening), category: .capture)
         } catch {

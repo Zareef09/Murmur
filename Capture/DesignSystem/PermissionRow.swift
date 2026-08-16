@@ -11,6 +11,7 @@ struct PermissionRow: View {
     var status: Status = .granted
     var hint: String?
     var divider: Bool = true
+    var fixTitle: String = "Allow"
     var onFix: (() -> Void)?
 
     var body: some View {
@@ -29,7 +30,7 @@ struct PermissionRow: View {
             .frame(maxWidth: .infinity, alignment: .leading)
 
             if !isGranted, onFix != nil {
-                Button("Allow", action: { onFix?() })
+                Button(fixTitle, action: { onFix?() })
                     .font(MurmurType.footnote)
                     .tracking(MurmurType.trackingFootnote)
                     .foregroundStyle(MurmurColor.textPrimary)
@@ -51,6 +52,7 @@ struct PermissionRow: View {
             }
         }
         .accessibilityElement(children: .combine)
+        .modifier(PermissionFixAction(title: fixTitle, isEnabled: !isGranted && onFix != nil, action: { onFix?() }))
     }
 
     private var isGranted: Bool { status == .granted }
@@ -69,5 +71,19 @@ struct PermissionRow: View {
         .frame(width: 26, height: 26)
         .background(isGranted ? MurmurColor.successBg : MurmurColor.attentionBg)
         .clipShape(Circle())
+    }
+}
+
+private struct PermissionFixAction: ViewModifier {
+    var title: String
+    var isEnabled: Bool
+    var action: () -> Void
+
+    func body(content: Content) -> some View {
+        if isEnabled {
+            content.accessibilityAction(named: title, action)
+        } else {
+            content
+        }
     }
 }

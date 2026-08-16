@@ -17,6 +17,8 @@ struct SuccessBar: View {
                 .foregroundStyle(MurmurColor.textPrimary)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .lineLimit(2)
+                .accessibilityLabel(message)
+                .accessibilityAddTraits(.updatesFrequently)
 
             if let onUndo {
                 Button(action: onUndo) {
@@ -44,15 +46,13 @@ struct SuccessBar: View {
         .clipShape(Capsule())
         .murmurShadow(.card)
         .opacity(appeared ? 1 : 0)
-        .offset(y: appeared ? 0 : 8)
+        .offset(y: appeared ? 0 : MurmurMotion.transcriptRise)
         .onAppear {
             withAnimation(MurmurMotion.animation(.settle, .normal, reduceMotion: reduceMotion)) {
                 appeared = true
             }
         }
         .accessibilityElement(children: .contain)
-        .accessibilityAddTraits(.updatesFrequently)
-        .accessibilityLabel(message)
     }
 
     private var glyph: some View {

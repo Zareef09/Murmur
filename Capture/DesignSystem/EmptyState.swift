@@ -30,17 +30,20 @@ struct EmptyState<Action: View>: View {
                         .strokeBorder(MurmurColor.lineSoft, lineWidth: MurmurRadius.strokeHairline)
                 }
                 .clipShape(Circle())
+                .accessibilityHidden(true)
 
             VStack(spacing: MurmurSpace.space3) {
                 Text(title)
                     .font(MurmurType.headline)
                     .tracking(MurmurType.trackingHeadline)
                     .foregroundStyle(MurmurColor.textPrimary)
+                    .accessibilityAddTraits(.isHeader)
                 if let message {
                     Text(message)
                         .font(MurmurType.callout)
                         .tracking(MurmurType.trackingCallout)
                         .foregroundStyle(MurmurColor.textSecondary)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
             }
             .multilineTextAlignment(.center)
