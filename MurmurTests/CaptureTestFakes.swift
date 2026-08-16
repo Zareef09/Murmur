@@ -17,6 +17,15 @@ final class FakeSpeechService: SpeechServicing {
     }
 
     func stop() {}
+
+    /// Mirrors the real service: an unfinalised partial is kept, not dropped.
+    func endTurn() {
+        if committedText.isEmpty {
+            committedText = partialText
+            partialText = ""
+        }
+        onTurnEnded?()
+    }
 }
 
 @MainActor

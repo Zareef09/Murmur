@@ -1,7 +1,8 @@
 import SwiftUI
 
-/// Light Well: idle breath, listening bloom, thinking hold, done settle.
-/// `level` is 0…1. The well follows with attack/release and ring lag so it reads as breath, not a meter.
+/// The well breathes continuously and blends its colours as it turns. Listening deepens the same
+/// breath rather than switching to a different animation, so the loop never snaps between states.
+/// `level` is 0…1 and is smoothed inside (≈120ms attack, ≈400ms release).
 struct CaptureBloom: View {
     enum BloomState {
         case idle
@@ -11,7 +12,6 @@ struct CaptureBloom: View {
     }
 
     var state: BloomState = .idle
-    /// Normalised amplitude. Smoothed inside (≈120ms attack, ≈400ms release).
     var level: CGFloat = 0
     var size: CGFloat = 240
     var label: String?
@@ -19,13 +19,13 @@ struct CaptureBloom: View {
     var onTap: () -> Void = {}
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.colorScheme) private var colorScheme
     @State private var follow = AmplitudeFollow()
-    @State private var breathHold = BreathHold()
     @State private var coreDip: CGFloat = 1
 
     var body: some View {
         VStack(spacing: MurmurSpace.space6) {
-            TimelineView(.animation(minimumInterval: 1 / 30, paused: reduceMotion || state == .done)) { context in
+            TimelineView(.animation(minimumInterval: 1 / 60, paused: reduceMotion)) { context in
                 well(at: context.date)
             }
             .frame(width: size, height: size)
@@ -39,7 +39,7 @@ struct CaptureBloom: View {
             }
             .accessibilityElement()
             .accessibilityLabel(label ?? AccessibilityCopy.captureWell)
-            .accessibilityHint(isInteractive && state == .idle ? AccessibilityCopy.wellHint : "")
+            .accessibilityHint(voiceOverHint)
             .accessibilityAddTraits(isInteractive ? .isButton : [])
             .accessibilityHidden(!isInteractive && label == nil)
 
@@ -53,6 +53,16 @@ struct CaptureBloom: View {
         }
     }
 
+    /// Listening announces the tap as a stop, since that is what the second tap does.
+    private var voiceOverHint: String {
+        guard isInteractive else { return "" }
+        switch state {
+        case .idle: return AccessibilityCopy.wellHint
+        case .listening: return AccessibilityCopy.wellStopHint
+        case .thinking, .done: return ""
+        }
+    }
+
     static func hitSize(visual: CGFloat, interactive: Bool) -> CGFloat {
         interactive ? max(visual, MurmurSpace.hitHero) : visual
     }
@@ -61,87 +71,89 @@ struct CaptureBloom: View {
         Self.hitSize(visual: size, interactive: isInteractive)
     }
 
+    // MARK: Composition
+
     private func well(at date: Date) -> some View {
-        let smoothed = follow.tick(
+        let amp = follow.tick(
             target: state == .listening ? level : 0,
             now: date,
             reduceMotion: reduceMotion
         )
-        let spin = thinkingSpin(at: date)
+        let breath = breathWave(at: date)
+        let spin = spin(at: date)
+        let swell = swell(breath: breath, amp: amp)
+
+        // No drawingGroup and no plusLighter here on purpose: both composite a rectangular buffer,
+        // which shows up as a hard box behind the glow.
         return ZStack {
-            bloom(level: smoothed)
-            ring(percent: 1.00, weight: 1, date: date, lag: 180, level: smoothed)
-            ring(percent: 0.76, weight: 1, date: date, lag: 90, level: smoothed)
-            ring(percent: 0.54, weight: 1.5, date: date, lag: 0, level: smoothed)
-            thinkingArc(spin: spin)
-            core(level: smoothed)
+            haze(spin: spin, swell: swell, amp: amp)
+            halo(spin: spin, swell: swell, amp: amp)
+            core(spin: spin, swell: swell, amp: amp)
             checkmark
         }
         .frame(width: size, height: size)
         .animation(stateMorph, value: state)
     }
 
-    private var stateMorph: Animation {
-        if state == .done {
-            MurmurMotion.animation(.settle, .slow, reduceMotion: reduceMotion)
-        } else {
-            MurmurMotion.animation(.exhale, .slow, reduceMotion: reduceMotion)
-        }
+    /// Every layer fades to clear at its own edge, so the well has no boundary anywhere.
+    private var softEdge: RadialGradient {
+        RadialGradient(
+            colors: [.white, .white.opacity(0.45), .clear],
+            center: .center,
+            startRadius: 0,
+            endRadius: size * 0.58
+        )
     }
 
-    private func bloom(level: CGFloat) -> some View {
+    private var stateMorph: Animation {
+        state == .done
+            ? MurmurMotion.animation(.settle, .slow, reduceMotion: reduceMotion)
+            : MurmurMotion.animation(.exhale, .slow, reduceMotion: reduceMotion)
+    }
+
+    /// Wide soft cloud. Carries the colour, masked to nothing at its rim so it never reads as a disc.
+    private func haze(spin: Double, swell: CGFloat, amp: CGFloat) -> some View {
         Circle()
-            .fill(
-                RadialGradient(
-                    colors: [MurmurColor.accentGlow, MurmurColor.accentGlowFaint, .clear],
-                    center: .center,
-                    startRadius: 0,
-                    endRadius: size * 0.68
-                )
-            )
-            .frame(width: size * 1.52, height: size * 1.52)
-            .scaleEffect(bloomScale(level))
-            .opacity(bloomOpacity(level))
-            .blur(radius: 2)
+            .fill(blend(spin: spin))
+            .frame(width: size * 1.12, height: size * 1.12)
+            .mask(softEdge)
+            .blur(radius: size * 0.03)
+            .scaleEffect(swell)
+            .opacity(lit(hazeOpacity(amp)))
             .allowsHitTesting(false)
     }
 
-    private func ring(percent: CGFloat, weight: CGFloat, date: Date, lag: Double, level: CGFloat) -> some View {
-        let inset = size * (1 - percent) / 2
-        let lagged = state == .listening ? follow.lagged(lag, at: date) : level
-        let hold = breathHold.tick(
-            lag: lag,
-            live: idleBreath(at: date, lagMs: lag * 4),
-            idle: state == .idle
-        )
-        return Circle()
-            .strokeBorder(MurmurColor.accent, lineWidth: weight)
-            .padding(inset)
-            .scaleEffect(ringScale(lagged) * hold.scale)
-            .opacity(ringOpacity(lagged) * hold.opacity)
+    /// The readable edge of the well. Breathes slightly behind the haze so the motion reads as depth.
+    private func halo(spin: Double, swell: CGFloat, amp: CGFloat) -> some View {
+        Circle()
+            .strokeBorder(blend(spin: -spin * 0.6), lineWidth: size * 0.022)
+            .frame(width: size * 0.80, height: size * 0.80)
+            .scaleEffect(swell * 0.99)
+            .opacity(lit(haloOpacity(amp)))
+            .allowsHitTesting(false)
     }
 
-    private func thinkingArc(spin: Double) -> some View {
+    /// Bright centre. Keeps a warm heart so the blend never reads as a cold grey.
+    private func core(spin: Double, swell: CGFloat, amp: CGFloat) -> some View {
         Circle()
-            .trim(from: 0, to: 0.22)
-            .stroke(MurmurColor.accent, style: StrokeStyle(lineWidth: 1.5, lineCap: .round))
-            .padding(size * 0.12)
-            .rotationEffect(.degrees(spin))
-            .opacity(state == .thinking ? 0.85 : 0)
-    }
-
-    private func core(level: CGFloat) -> some View {
-        Circle()
-            .fill(MurmurColor.accent)
-            .padding(size * 0.38)
-            .scaleEffect(coreScale(level) * coreDip)
-            .opacity(coreOpacity(level))
-            .murmurShadow(state == .listening ? .listening : .none)
+            .fill(blend(spin: spin * 1.4))
+            .frame(width: size * 0.42, height: size * 0.42)
+            .mask(
+                RadialGradient(
+                    colors: [.white, .white, .white.opacity(0.9), .clear],
+                    center: .center,
+                    startRadius: 0,
+                    endRadius: size * 0.21
+                )
+            )
+            .scaleEffect(swell * coreDip)
+            .opacity(lit(coreOpacity(amp)))
+            .allowsHitTesting(false)
     }
 
     private var checkmark: some View {
-        MurmurIcon(name: .check, size: (size * 0.13).rounded())
-            .foregroundStyle(MurmurColor.accentOn)
+        MurmurIcon(name: .check, size: (size * 0.15).rounded())
+            .foregroundStyle(MurmurColor.textInverse)
             .opacity(state == .done ? 1 : 0)
             .animation(
                 MurmurMotion.animation(.exhale, .normal, reduceMotion: reduceMotion).delay(
@@ -151,54 +163,80 @@ struct CaptureBloom: View {
             )
     }
 
-    private func bloomScale(_ level: CGFloat) -> CGFloat {
+    /// Light canvases need the deeper hues; the pastels vanish against near-white.
+    private func blend(spin: Double) -> AngularGradient {
+        AngularGradient(
+            colors: colorScheme == .dark ? MurmurColor.bloomBlend : MurmurColor.bloomBlendDeep,
+            center: .center,
+            angle: .degrees(spin)
+        )
+    }
+
+    // MARK: Motion
+
+    /// 0…1 continuous breath. Frozen mid-cycle under Reduce Motion so the well still reads as lit.
+    ///
+    /// A raw cosine spends most of its time mid-stroke, which reads as a hum. Smoothstep pushes the
+    /// curve toward its ends, so the well holds full and holds empty and moves decisively between —
+    /// the shape of a breath rather than a wobble.
+    private func breathWave(at date: Date) -> CGFloat {
+        guard !reduceMotion, state != .done else { return 0.5 }
+        let period = MurmurMotion.seconds(.breath, reduceMotion: false)
+        let t = date.timeIntervalSinceReferenceDate
+        let raw = CGFloat((1 - cos(t * 2 * .pi / period)) / 2)
+        return raw * raw * (3 - 2 * raw)
+    }
+
+    /// Colour rotation. Thinking spins faster; everything else drifts.
+    private func spin(at date: Date) -> Double {
+        guard !reduceMotion else { return 0 }
+        let t = date.timeIntervalSinceReferenceDate
+        return state == .thinking ? t / 2.2 * 360 : t / 14 * 360
+    }
+
+    private func swell(breath: CGFloat, amp: CGFloat) -> CGFloat {
         switch state {
-        case .idle: 0.8
-        case .listening: 0.86 + level * 0.42
-        case .thinking: 0.74
-        case .done: 0.9
+        case .idle: 0.88 + breath * 0.12
+        case .listening: 0.94 + breath * 0.08 + amp * 0.24
+        case .thinking: 0.86 + breath * 0.06
+        case .done: 1.06
         }
     }
 
-    private func bloomOpacity(_ level: CGFloat) -> Double {
+    /// Light mode needs more ink for the same presence: the canvas is nearly white.
+    private var toneBoost: Double {
+        colorScheme == .dark ? 1 : 1.4
+    }
+
+    private func lit(_ value: Double) -> Double {
+        min(1, value * toneBoost)
+    }
+
+    // Translucent throughout: the canvas reads through every layer.
+    private func hazeOpacity(_ amp: CGFloat) -> Double {
         switch state {
-        case .idle: 0.42
-        case .listening: 0.55 + Double(level) * 0.45
-        case .thinking: 0.6
-        case .done: 0.7
+        case .idle: 0.30
+        case .listening: 0.38 + Double(amp) * 0.22
+        case .thinking: 0.32
+        case .done: 0.40
         }
     }
 
-    private func ringScale(_ level: CGFloat) -> CGFloat {
+    private func haloOpacity(_ amp: CGFloat) -> Double {
         switch state {
-        case .listening: 1 + level * 0.10
-        case .thinking: 0.94
-        case .idle, .done: 1
+        case .idle: 0.45
+        case .listening: 0.58 + Double(amp) * 0.28
+        case .thinking: 0.50
+        case .done: 0.62
         }
     }
 
-    private func ringOpacity(_ level: CGFloat) -> Double {
+    private func coreOpacity(_ amp: CGFloat) -> Double {
         switch state {
-        case .listening: 0.20 + Double(level) * 0.34
-        case .thinking: 0.20
-        case .idle, .done: 0.16
-        }
-    }
-
-    private func coreScale(_ level: CGFloat) -> CGFloat {
-        switch state {
-        case .done: 1.14
-        case .listening: 1 + level * 0.06
-        case .idle, .thinking: 1
-        }
-    }
-
-    private func coreOpacity(_ level: CGFloat) -> Double {
-        switch state {
-        case .idle: 0.26
-        case .listening: 0.5 + Double(level) * 0.4
-        case .thinking: 0.4
-        case .done: 1
+        case .idle: 0.55
+        case .listening: 0.68 + Double(amp) * 0.26
+        case .thinking: 0.58
+        case .done: 0.85
         }
     }
 
@@ -208,46 +246,12 @@ struct CaptureBloom: View {
             coreDip = 1
         }
     }
-
-    private func idleBreath(at date: Date, lagMs: Double) -> BloomBreath {
-        guard state == .idle, !reduceMotion else {
-            return BloomBreath(scale: 1, opacity: 1)
-        }
-        let period = MurmurMotion.seconds(.breath, reduceMotion: false)
-        let t = date.timeIntervalSinceReferenceDate - lagMs / 1000
-        let wave = (1 - cos(t * 2 * .pi / period)) / 2
-        return BloomBreath(scale: 1 + 0.045 * wave, opacity: 0.82 + 0.18 * wave)
-    }
-
-    private func thinkingSpin(at date: Date) -> Double {
-        guard state == .thinking, !reduceMotion else { return -90 }
-        return date.timeIntervalSinceReferenceDate / 2.6 * 360 - 90
-    }
 }
 
-/// Freeze idle breath when leaving idle so the loop does not snap back.
-private struct BloomBreath {
-    var scale: CGFloat
-    var opacity: Double
-}
-
-private final class BreathHold {
-    private var held: [Double: BloomBreath] = [:]
-
-    func tick(lag: Double, live: BloomBreath, idle: Bool) -> BloomBreath {
-        if idle {
-            held[lag] = live
-            return live
-        }
-        return held[lag] ?? BloomBreath(scale: 1, opacity: 1)
-    }
-}
-
-/// Attack 120ms, release 400ms. Ring lag is sampled from this history.
+/// Attack 120ms, release 400ms, so the well follows the voice as breath rather than as a meter.
 private final class AmplitudeFollow {
     private var value: CGFloat = 0
     private var lastDate: Date?
-    private var history: [(Date, CGFloat)] = []
 
     @discardableResult
     func tick(target: CGFloat, now: Date, reduceMotion: Bool) -> CGFloat {
@@ -255,23 +259,12 @@ private final class AmplitudeFollow {
         if reduceMotion {
             value = clamped
             lastDate = now
-            history = [(now, value)]
             return value
         }
         let dt = min(0.05, now.timeIntervalSince(lastDate ?? now))
         lastDate = now
         let tau: TimeInterval = clamped > value ? 0.12 : 0.40
         value += (clamped - value) * (1 - CGFloat(exp(-dt / tau)))
-        history.append((now, value))
-        history.removeAll { now.timeIntervalSince($0.0) > 0.4 }
         return value
-    }
-
-    func lagged(_ milliseconds: Double, at now: Date) -> CGFloat {
-        let stamp = now.addingTimeInterval(-milliseconds / 1000)
-        if let sample = history.last(where: { $0.0 <= stamp }) {
-            return sample.1
-        }
-        return history.first?.1 ?? value
     }
 }

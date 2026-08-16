@@ -47,10 +47,43 @@ enum MurmurColor {
     static let clay400 = Color(hex: 0xE0907C)
     static let clay600 = Color(hex: 0xA8503F)
 
-    // MARK: Semantic (light / dark)
-    static let bgBase = Color(light: sand50, dark: sand1000)
-    static let bgSunk = Color(light: sand100, dark: Color(hex: 0x0B0A08))
-    static let bgRaised = Color(light: sand0, dark: Color(hex: 0x1D1913))
+    // MARK: Bloom (breathing well) — blended hues, decorative only, never text or chips
+    static let bloomEmber = Color(hex: 0xF2A24C)
+    static let bloomRose = Color(hex: 0xEC8F7E)
+    static let bloomLilac = Color(hex: 0xB98CC4)
+    static let bloomLeaf = Color(hex: 0x86C08D)
+    static let bloomSky = Color(hex: 0x6FB6D9)
+
+    /// Decorative blend for the well: warm out to a cool centre and symmetrically back.
+    ///
+    /// The ramp is a palindrome on purpose. An angular gradient wraps at its start angle, and that
+    /// angle drifts as the well turns — a one-way ramp shows a seam there. Mirrored, whatever meets
+    /// at the wrap is the same colour on both sides, so there is no edge to find.
+    static let bloomBlend: [Color] = [
+        bloomEmber,
+        bloomRose,
+        Color(hex: 0xC98CB4),
+        bloomSky,
+        Color(hex: 0xC98CB4),
+        bloomRose,
+        bloomEmber
+    ]
+
+    /// Same hues carried deeper, for the light canvas where the pastels have no presence.
+    static let bloomBlendDeep: [Color] = [
+        Color(hex: 0xC2701F),
+        Color(hex: 0xBE5342),
+        Color(hex: 0x9A5E86),
+        Color(hex: 0x4A6E9B),
+        Color(hex: 0x9A5E86),
+        Color(hex: 0xBE5342),
+        Color(hex: 0xC2701F)
+    ]
+
+    // MARK: Semantic (light / dark) — brightened base, Session 96
+    static let bgBase = Color(light: sand0, dark: Color(hex: 0x201B15))
+    static let bgSunk = Color(light: sand50, dark: Color(hex: 0x171310))
+    static let bgRaised = Color(light: Color(hex: 0xFFFFFF), dark: Color(hex: 0x2B251D))
     static let bgOverlay = Color(light: Color(hex: 0x211D18, alpha: 0.28), dark: Color(hex: 0x090806, alpha: 0.58))
     static let bgScrim = Color(light: Color(hex: 0xFAF6EF, alpha: 0.72), dark: Color(hex: 0x100E0B, alpha: 0.74))
 
@@ -69,8 +102,8 @@ enum MurmurColor {
     static let accentPress = Color(light: ember800, dark: ember500)
     static let accentQuiet = Color(light: ember100, dark: Color(hex: 0xE5A063, alpha: 0.14))
     static let accentOn = Color(light: sand0, dark: Color(hex: 0x241608))
-    static let accentGlow = Color(light: Color(hex: 0xD2803A, alpha: 0.34), dark: Color(hex: 0xEFBE8B, alpha: 0.40))
-    static let accentGlowFaint = Color(light: Color(hex: 0xD2803A, alpha: 0.12), dark: Color(hex: 0xEFBE8B, alpha: 0.13))
+    static let accentGlow = Color(light: Color(hex: 0xE5A063, alpha: 0.42), dark: Color(hex: 0xEFBE8B, alpha: 0.48))
+    static let accentGlowFaint = Color(light: Color(hex: 0xE5A063, alpha: 0.16), dark: Color(hex: 0xEFBE8B, alpha: 0.18))
 
     static let reminderFg = Color(light: moss700, dark: moss300)
     static let reminderBg = Color(light: Color(hex: 0xEDEFE0), dark: Color(hex: 0x9BA778, alpha: 0.15))

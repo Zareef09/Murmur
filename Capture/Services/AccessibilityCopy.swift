@@ -4,4 +4,5 @@ import Foundation
 enum AccessibilityCopy {
     static let captureWell = "Capture a thought"
     static let wellHint = "Starts listening"
+    static let wellStopHint = "Stops listening and files what you said"
 }

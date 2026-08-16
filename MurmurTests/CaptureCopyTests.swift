@@ -4,10 +4,11 @@ import XCTest
 final class CaptureCopyTests: XCTestCase {
     func testKitCaptionsMatchCaptureHome() {
         XCTAssertEqual(CaptureCopy.idleCaption, "Tap to speak")
-        XCTAssertEqual(CaptureCopy.listeningCaption, "Listening")
+        // Listening teaches the second tap rather than restating what the well already shows.
+        XCTAssertEqual(CaptureCopy.listeningCaption, "Tap again when you're done")
         XCTAssertEqual(CaptureCopy.thinkingCaption, "One moment")
         XCTAssertEqual(CaptureCopy.successCaption, SuccessCopy.caption)
-        XCTAssertEqual(CaptureCopy.listeningPlaceholder, "I'm listening…")
+        XCTAssertEqual(CaptureCopy.listeningPlaceholder, "Say it when you're ready")
         XCTAssertEqual(CaptureCopy.firstRunCaption, "Tap, then just say it")
         XCTAssertEqual(CaptureCopy.firstRunTitle, "Say what you need to remember.")
     }

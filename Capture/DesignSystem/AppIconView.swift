@@ -1,6 +1,40 @@
 import SwiftUI
 
-/// Capture well at Home Screen scale: warm ground, two rings, ember core. Not a microphone.
+/// The Murmur mark: a single letter M, drawn as a path so it never depends on a font being loaded.
+///
+/// Normalised to a unit square. `Scripts/GenerateAppIcon.swift` draws the same five points in
+/// CoreGraphics — keep the two in step.
+enum MurmurMark {
+    /// Vertical stem, V, vertical stem. Read left to right.
+    static let points: [CGPoint] = [
+        CGPoint(x: 0.26, y: 0.72),
+        CGPoint(x: 0.26, y: 0.29),
+        CGPoint(x: 0.50, y: 0.60),
+        CGPoint(x: 0.74, y: 0.29),
+        CGPoint(x: 0.74, y: 0.72)
+    ]
+
+    /// Stroke weight as a fraction of the icon edge.
+    static let strokeRatio: CGFloat = 0.105
+}
+
+/// The M as a stroked shape, scaled to whatever rect it is given.
+struct MurmurMarkShape: Shape {
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        let scaled = MurmurMark.points.map { point in
+            CGPoint(x: rect.minX + point.x * rect.width, y: rect.minY + point.y * rect.height)
+        }
+        guard let first = scaled.first else { return path }
+        path.move(to: first)
+        for point in scaled.dropFirst() {
+            path.addLine(to: point)
+        }
+        return path
+    }
+}
+
+/// Home Screen icon: warm ground, the letter M. Not a microphone.
 struct AppIconView: View {
     enum Theme {
         case light
@@ -14,32 +48,36 @@ struct AppIconView: View {
 
     var body: some View {
         let dark = resolved == .dark
-        let weight = max(1, size * 0.008)
         ZStack {
             RadialGradient(
                 colors: dark
-                    ? [Color(hex: 0x34291D), Color(hex: 0x17130E)]
-                    : [Color(hex: 0xFDF3E4), Color(hex: 0xF0E2CD)],
+                    ? [Color(hex: 0x2E2820), Color(hex: 0x14110D)]
+                    : [Color(hex: 0xFFFDFA), Color(hex: 0xF0E2CD)],
                 center: UnitPoint(x: 0.5, y: 0.34),
                 startRadius: 0,
                 endRadius: size * 0.85
             )
-            ring(percent: 0.78, alpha: dark ? 0.30 : 0.22, weight: weight, dark: dark)
-            ring(percent: 0.54, alpha: dark ? 0.42 : 0.30, weight: weight, dark: dark)
-            Circle()
-                .fill(dark ? MurmurColor.ember400 : MurmurColor.ember600)
-                .padding(size * 0.38)
+            MurmurMarkShape()
+                .stroke(
+                    dark ? Color(hex: 0xF6F0E6) : MurmurColor.ember700,
+                    style: StrokeStyle(
+                        lineWidth: size * MurmurMark.strokeRatio,
+                        lineCap: .butt,
+                        lineJoin: .miter,
+                        miterLimit: 10
+                    )
+                )
                 .shadow(
-                    color: dark ? Color(hex: 0xEFBE8B, alpha: 0.50) : Color(hex: 0xD2803A, alpha: 0.42),
-                    radius: size * 0.22,
-                    x: 0,
-                    y: 0
+                    color: dark
+                        ? Color(hex: 0xEFBE8B, alpha: 0.22)
+                        : Color(hex: 0xD2803A, alpha: 0.18),
+                    radius: size * 0.10
                 )
         }
         .frame(width: size, height: size)
         .clipShape(iconShape)
         .murmurShadow(.card)
-        .accessibilityLabel("murmur")
+        .accessibilityLabel(Wordmark.text)
     }
 
     private var resolved: Theme {
@@ -49,14 +87,14 @@ struct AppIconView: View {
     private var iconShape: RoundedRectangle {
         RoundedRectangle(cornerRadius: size * MurmurRadius.icon, style: .continuous)
     }
+}
 
-    private func ring(percent: CGFloat, alpha: Double, weight: CGFloat, dark: Bool) -> some View {
-        let inset = size * (1 - percent) / 2
-        return Circle()
-            .strokeBorder(
-                (dark ? Color(hex: 0xEFBE8B) : Color(hex: 0x98481D)).opacity(alpha),
-                lineWidth: weight
-            )
-            .padding(inset)
-    }
+#Preview("App icon · light") {
+    AppIconView(size: 120, theme: .light)
+        .padding(40)
+}
+
+#Preview("App icon · dark") {
+    AppIconView(size: 120, theme: .dark)
+        .padding(40)
 }

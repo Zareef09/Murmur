@@ -11,12 +11,43 @@
 		F1A2B3C4D5E608192A3B003E /* MurmurWidgets.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = F1A2B3C4D5E608192A3B0030 /* MurmurWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		F1A2B3C4D5E608192A3B0027 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F1A2B3C4D5E608192A3B0008 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F1A2B3C4D5E608192A3B0006;
+			remoteInfo = Murmur;
+		};
+		F1A2B3C4D5E608192A3B0038 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F1A2B3C4D5E608192A3B0008 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F1A2B3C4D5E608192A3B0032;
+			remoteInfo = MurmurWidgets;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		F1A2B3C4D5E608192A3B0036 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				F1A2B3C4D5E608192A3B003E /* MurmurWidgets.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		F1A2B3C4D5E608192A3B0001 /* Murmur.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Murmur.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		F1A2B3C4D5E608192A3B0020 /* MurmurTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MurmurTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		F1A2B3C4D5E608192A3B0030 /* MurmurWidgets.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = MurmurWidgets.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		F1A2B3C4D5E608192A3B0013 /* Supabase.debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Supabase.debug.xcconfig; sourceTree = "<group>"; };
 		F1A2B3C4D5E608192A3B0014 /* Supabase.release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Supabase.release.xcconfig; sourceTree = "<group>"; };
+		F1A2B3C4D5E608192A3B0020 /* MurmurTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MurmurTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		F1A2B3C4D5E608192A3B0030 /* MurmurWidgets.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = MurmurWidgets.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -50,17 +81,17 @@
 			path = MurmurTests;
 			sourceTree = "<group>";
 		};
-		F1A2B3C4D5E608192A3B003C /* Shared */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = Shared;
-			sourceTree = "<group>";
-		};
 		F1A2B3C4D5E608192A3B0031 /* Widgets */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
 				F1A2B3C4D5E608192A3B003D /* Exceptions for "Widgets" folder in "MurmurWidgets" target */,
 			);
 			path = Widgets;
+			sourceTree = "<group>";
+		};
+		F1A2B3C4D5E608192A3B003C /* Shared */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Shared;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -254,36 +285,6 @@
 		};
 /* End PBXProject section */
 
-/* Begin PBXContainerItemProxy section */
-		F1A2B3C4D5E608192A3B0027 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = F1A2B3C4D5E608192A3B0008 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = F1A2B3C4D5E608192A3B0006;
-			remoteInfo = Murmur;
-		};
-		F1A2B3C4D5E608192A3B0038 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = F1A2B3C4D5E608192A3B0008 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = F1A2B3C4D5E608192A3B0032;
-			remoteInfo = MurmurWidgets;
-		};
-/* End PBXContainerItemProxy section */
-
-/* Begin PBXTargetDependency section */
-		F1A2B3C4D5E608192A3B0026 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = F1A2B3C4D5E608192A3B0006 /* Murmur */;
-			targetProxy = F1A2B3C4D5E608192A3B0027 /* PBXContainerItemProxy */;
-		};
-		F1A2B3C4D5E608192A3B0037 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = F1A2B3C4D5E608192A3B0032 /* MurmurWidgets */;
-			targetProxy = F1A2B3C4D5E608192A3B0038 /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
-
 /* Begin PBXResourcesBuildPhase section */
 		F1A2B3C4D5E608192A3B000B /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
@@ -306,20 +307,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-
-/* Begin PBXCopyFilesBuildPhase section */
-		F1A2B3C4D5E608192A3B0036 /* Embed Foundation Extensions */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 13;
-			files = (
-				F1A2B3C4D5E608192A3B003E /* MurmurWidgets.appex in Embed Foundation Extensions */,
-			);
-			name = "Embed Foundation Extensions";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXCopyFilesBuildPhase section */
+/* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		F1A2B3C4D5E608192A3B000A /* Sources */ = {
@@ -343,6 +331,20 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		F1A2B3C4D5E608192A3B0026 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F1A2B3C4D5E608192A3B0006 /* Murmur */;
+			targetProxy = F1A2B3C4D5E608192A3B0027 /* PBXContainerItemProxy */;
+		};
+		F1A2B3C4D5E608192A3B0037 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F1A2B3C4D5E608192A3B0032 /* MurmurWidgets */;
+			targetProxy = F1A2B3C4D5E608192A3B0038 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		F1A2B3C4D5E608192A3B000C /* Debug */ = {
@@ -570,6 +572,7 @@
 			};
 			name = Release;
 		};
+/* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
 		F1A2B3C4D5E608192A3B0007 /* Build configuration list for PBXNativeTarget "Murmur" */ = {

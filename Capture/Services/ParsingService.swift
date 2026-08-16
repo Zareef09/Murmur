@@ -18,6 +18,21 @@ struct ParsingService: ParsingServicing {
         }
 
         let matches = dateMatches(in: trimmed)
+
+        // "at 5" carries a real time to a person but not to NSDataDetector, which needs "5pm" or
+        // "5:00". Fall back to a bare hour only when the detector found nothing at all.
+        if matches.isEmpty, let bare = BareClockTime.firstMatch(in: trimmed) {
+            let taskText = TaskTextCleanup.cleaned(from: trimmed, removing: [bare.range])
+            return ParsedIntent(
+                rawTranscript: transcript,
+                taskText: taskText,
+                date: bare.date,
+                hasExplicitTime: true,
+                needsClarification: taskText.isEmpty,
+                clarificationKind: taskText.isEmpty ? .garbled : nil
+            )
+        }
+
         let first = matches.first
         let twoDates = matches.count >= 2
         let matchedText = first.map { substring(trimmed, range: $0.range) } ?? ""
@@ -61,6 +76,60 @@ struct ParsingService: ParsingServicing {
         guard let match, match.duration >= 60 else { return nil }
         let minutes = Int((match.duration / 60).rounded())
         return minutes > 0 ? minutes : nil
+    }
+}
+
+/// A spoken hour with no meridiem and no date word: "call mom at 5", "dinner at 8".
+///
+/// Resolved to the next time that hour comes round on a 12-hour clock, which is what a person
+/// means by it. Said at 9am, "at 8" is tonight; said at 9pm, it is tomorrow morning.
+enum BareClockTime {
+    private static let pattern =
+        #"\bat\s+(1[0-2]|[1-9])(?::([0-5]\d))?\b(?!\s*(a\.?m\.?|p\.?m\.?|o['’]?clock))"#
+
+    static func firstMatch(
+        in text: String,
+        now: Date = Date(),
+        calendar: Calendar = .current
+    ) -> (range: NSRange, date: Date)? {
+        guard let regex = try? NSRegularExpression(pattern: pattern, options: [.caseInsensitive]) else {
+            return nil
+        }
+        let full = NSRange(text.startIndex..., in: text)
+        guard let match = regex.firstMatch(in: text, options: [], range: full) else { return nil }
+        guard let hour = intGroup(match, 1, in: text), (1...12).contains(hour) else { return nil }
+        let minute = intGroup(match, 2, in: text) ?? 0
+        guard let date = nextOccurrence(hour: hour, minute: minute, now: now, calendar: calendar) else {
+            return nil
+        }
+        return (match.range, date)
+    }
+
+    /// Earliest of today/tomorrow at the AM and PM readings that is still ahead of `now`.
+    private static func nextOccurrence(
+        hour: Int,
+        minute: Int,
+        now: Date,
+        calendar: Calendar
+    ) -> Date? {
+        let base = hour % 12
+        let today = calendar.startOfDay(for: now)
+        guard let tomorrow = calendar.date(byAdding: .day, value: 1, to: today) else { return nil }
+
+        return [today, tomorrow]
+            .flatMap { day in
+                [base, base + 12].compactMap { h in
+                    calendar.date(bySettingHour: h, minute: minute, second: 0, of: day)
+                }
+            }
+            .filter { $0 > now }
+            .min()
+    }
+
+    private static func intGroup(_ match: NSTextCheckingResult, _ index: Int, in text: String) -> Int? {
+        let range = match.range(at: index)
+        guard range.location != NSNotFound, let swiftRange = Range(range, in: text) else { return nil }
+        return Int(text[swiftRange])
     }
 }
 

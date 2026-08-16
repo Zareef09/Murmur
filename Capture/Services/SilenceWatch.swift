@@ -1,18 +1,46 @@
 import Foundation
 
 /// Ends listening ~1.5s after the last voice. Does not stop before the first voice.
+///
+/// A turn that is building a list gets a longer pause: thinking of the next item takes longer than
+/// the gap between words, and cutting someone off mid-list is the worst thing this can do.
 struct SilenceWatch: Equatable, Sendable {
     static let duration: TimeInterval = 1.5
+    static let listDuration: TimeInterval = 4
 
     private(set) var lastVoiceAt: Date?
+    private(set) var window: TimeInterval = duration
+
+    var isWaitingForMore: Bool {
+        window > Self.duration
+    }
 
     mutating func heardVoice(at date: Date) {
         lastVoiceAt = date
     }
 
+    /// One way only. Once a turn looks like a list it keeps the longer pause to the end.
+    mutating func allowLongerPause() {
+        window = Self.listDuration
+    }
+
     func shouldStop(now: Date) -> Bool {
         guard let lastVoiceAt else { return false }
-        return now.timeIntervalSince(lastVoiceAt) >= Self.duration
+        return now.timeIntervalSince(lastVoiceAt) >= window
+    }
+}
+
+/// Words that say "there is more coming". Used to hold the mic open, never to split text.
+enum ContinuationPhrase {
+    static let words = ["and", "then", "also", "plus", "next", "after that", "as well as"]
+
+    /// True once the turn so far reads as a list in progress.
+    static func suggestsMore(_ text: String) -> Bool {
+        let folded = text.lowercased()
+        if folded.contains(",") { return true }
+        return words.contains { word in
+            folded.range(of: #"\b\#(word)\b"#, options: .regularExpression) != nil
+        }
     }
 }
 

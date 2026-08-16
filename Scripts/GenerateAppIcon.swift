@@ -3,8 +3,11 @@ import Foundation
 import ImageIO
 import UniformTypeIdentifiers
 
-/// Renders Murmur Home Screen icons: warm well, two rings, ember core. Not a microphone.
+/// Renders Murmur Home Screen icons: warm ground, the letter M. Not a microphone.
 /// App Store 1024s are square and opaque (the system applies the mask). Tinted uses alpha.
+///
+/// The mark is drawn as a path, not typeset, so it does not depend on the bundled font. The five
+/// points mirror `MurmurMark.points` in Capture/DesignSystem/AppIconView.swift — keep them in step.
 
 enum IconKind: String {
     case light
@@ -37,30 +40,14 @@ func makeIcon(kind: IconKind, size: Int = 1024) -> CGImage {
 
     switch kind {
     case .light:
-        fillGradient(
-            ctx: ctx,
-            size: s,
-            inner: rgb(0xFDF3E4),
-            outer: rgb(0xF0E2CD)
-        )
-        strokeRing(ctx: ctx, size: s, percent: 0.78, color: rgb(0x98481D, alpha: 0.22))
-        strokeRing(ctx: ctx, size: s, percent: 0.54, color: rgb(0x98481D, alpha: 0.30))
-        fillCore(ctx: ctx, size: s, color: rgb(0xB4602A), glow: rgb(0xD2803A, alpha: 0.42))
+        fillGradient(ctx: ctx, size: s, inner: rgb(0xFFFDFA), outer: rgb(0xF0E2CD))
+        strokeMark(ctx: ctx, size: s, color: rgb(0x98481D), glow: rgb(0xD2803A, alpha: 0.18))
     case .dark:
-        fillGradient(
-            ctx: ctx,
-            size: s,
-            inner: rgb(0x34291D),
-            outer: rgb(0x17130E)
-        )
-        strokeRing(ctx: ctx, size: s, percent: 0.78, color: rgb(0xEFBE8B, alpha: 0.30))
-        strokeRing(ctx: ctx, size: s, percent: 0.54, color: rgb(0xEFBE8B, alpha: 0.42))
-        fillCore(ctx: ctx, size: s, color: rgb(0xE5A063), glow: rgb(0xEFBE8B, alpha: 0.50))
+        fillGradient(ctx: ctx, size: s, inner: rgb(0x2E2820), outer: rgb(0x14110D))
+        strokeMark(ctx: ctx, size: s, color: rgb(0xF6F0E6), glow: rgb(0xEFBE8B, alpha: 0.22))
     case .tinted:
         ctx.clear(CGRect(x: 0, y: 0, width: s, height: s))
-        strokeRing(ctx: ctx, size: s, percent: 0.78, color: rgb(0xFFFFFF, alpha: 0.42))
-        strokeRing(ctx: ctx, size: s, percent: 0.54, color: rgb(0xFFFFFF, alpha: 0.62))
-        fillCore(ctx: ctx, size: s, color: rgb(0xFFFFFF), glow: rgb(0xFFFFFF, alpha: 0.28))
+        strokeMark(ctx: ctx, size: s, color: rgb(0xFFFFFF), glow: nil)
     }
     guard let image = ctx.makeImage() else {
         fatalError("Could not make image")
@@ -91,22 +78,34 @@ func fillGradient(ctx: CGContext, size: CGFloat, inner: CGColor, outer: CGColor)
     )
 }
 
-func strokeRing(ctx: CGContext, size: CGFloat, percent: CGFloat, color: CGColor) {
-    let weight = max(1, size * 0.008)
-    let inset = size * (1 - percent) / 2
-    let rect = CGRect(x: inset, y: inset, width: size - inset * 2, height: size - inset * 2)
-        .insetBy(dx: weight / 2, dy: weight / 2)
-    ctx.setStrokeColor(color)
-    ctx.setLineWidth(weight)
-    ctx.strokeEllipse(in: rect)
-}
+/// Mirrors `MurmurMark.points`: vertical stem, V, vertical stem.
+let markPoints: [CGPoint] = [
+    CGPoint(x: 0.26, y: 0.72),
+    CGPoint(x: 0.26, y: 0.29),
+    CGPoint(x: 0.50, y: 0.60),
+    CGPoint(x: 0.74, y: 0.29),
+    CGPoint(x: 0.74, y: 0.72)
+]
 
-func fillCore(ctx: CGContext, size: CGFloat, color: CGColor, glow: CGColor) {
-    let inset = size * 0.38
-    let rect = CGRect(x: inset, y: inset, width: size - inset * 2, height: size - inset * 2)
-    ctx.setShadow(offset: .zero, blur: size * 0.22, color: glow)
-    ctx.setFillColor(color)
-    ctx.fillEllipse(in: rect)
+let markStrokeRatio: CGFloat = 0.105
+
+func strokeMark(ctx: CGContext, size: CGFloat, color: CGColor, glow: CGColor?) {
+    let points = markPoints.map { CGPoint(x: $0.x * size, y: $0.y * size) }
+    guard let first = points.first else { return }
+    if let glow {
+        ctx.setShadow(offset: .zero, blur: size * 0.10, color: glow)
+    }
+    ctx.setStrokeColor(color)
+    ctx.setLineWidth(size * markStrokeRatio)
+    ctx.setLineCap(.butt)
+    ctx.setLineJoin(.miter)
+    ctx.setMiterLimit(10)
+    ctx.beginPath()
+    ctx.move(to: first)
+    for point in points.dropFirst() {
+        ctx.addLine(to: point)
+    }
+    ctx.strokePath()
     ctx.setShadow(offset: .zero, blur: 0, color: nil)
 }
 

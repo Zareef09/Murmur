@@ -23,18 +23,18 @@ final class AccessibilityTests: XCTestCase {
 
     func testBodyTextMeetsAAOnLightAndDark() {
         // Hex pairs match Capture/DesignSystem/Colors.swift
-        XCTAssertGreaterThanOrEqual(Contrast.ratio(0x211D18, 0xFAF6EF), 4.5) // primary on base, light
-        XCTAssertGreaterThanOrEqual(Contrast.ratio(0x6E6455, 0xFAF6EF), 4.5) // secondary, light
-        XCTAssertGreaterThanOrEqual(Contrast.ratio(0x98481D, 0xFAF6EF), 4.5) // accent text, light
+        XCTAssertGreaterThanOrEqual(Contrast.ratio(0x211D18, 0xFFFDFA), 4.5) // primary on base, light
+        XCTAssertGreaterThanOrEqual(Contrast.ratio(0x6E6455, 0xFFFDFA), 4.5) // secondary, light
+        XCTAssertGreaterThanOrEqual(Contrast.ratio(0x98481D, 0xFFFDFA), 4.5) // accent text, light
         XCTAssertGreaterThanOrEqual(Contrast.ratio(0x55603C, 0xEDEFE0), 4.5) // reminder fg on chip, light
         XCTAssertGreaterThanOrEqual(Contrast.ratio(0x714A57, 0xF5E7EA), 4.5) // event fg on chip, light
-        XCTAssertGreaterThanOrEqual(Contrast.ratio(0xF2EBDF, 0x100E0B), 4.5) // primary, dark
-        XCTAssertGreaterThanOrEqual(Contrast.ratio(0xA9A08F, 0x100E0B), 4.5) // secondary, dark
-        XCTAssertGreaterThanOrEqual(Contrast.ratio(0xEFBE8B, 0x100E0B), 4.5) // accent text, dark
-        XCTAssertGreaterThanOrEqual(Contrast.ratio(0xBFC79A, 0x100E0B), 4.5) // reminder fg, dark
-        XCTAssertGreaterThanOrEqual(Contrast.ratio(0xD9AEBA, 0x100E0B), 4.5) // event fg, dark
-        XCTAssertGreaterThanOrEqual(Contrast.ratio(0x948977, 0xFAF6EF), 3.0) // tertiary caption, light
-        XCTAssertGreaterThanOrEqual(Contrast.ratio(0x7C7365, 0x100E0B), 3.0) // tertiary caption, dark
+        XCTAssertGreaterThanOrEqual(Contrast.ratio(0xF2EBDF, 0x201B15), 4.5) // primary, dark
+        XCTAssertGreaterThanOrEqual(Contrast.ratio(0xA9A08F, 0x201B15), 4.5) // secondary, dark
+        XCTAssertGreaterThanOrEqual(Contrast.ratio(0xEFBE8B, 0x201B15), 4.5) // accent text, dark
+        XCTAssertGreaterThanOrEqual(Contrast.ratio(0xBFC79A, 0x201B15), 4.5) // reminder fg, dark
+        XCTAssertGreaterThanOrEqual(Contrast.ratio(0xD9AEBA, 0x201B15), 4.5) // event fg, dark
+        XCTAssertGreaterThanOrEqual(Contrast.ratio(0x948977, 0xFFFDFA), 3.0) // tertiary caption, light
+        XCTAssertGreaterThanOrEqual(Contrast.ratio(0x7C7365, 0x201B15), 3.0) // tertiary caption, dark
     }
 }
 

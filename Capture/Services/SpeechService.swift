@@ -54,6 +54,8 @@ protocol SpeechServicing: AnyObject {
     var onLevelChange: ((Float) -> Void)? { get set }
     func start() async throws
     func stop()
+    /// Ends the turn now, keeping whatever has been heard. Same finish as running out of silence.
+    func endTurn()
 }
 
 /// On-device buffer stream. Transcript stays in RAM. Silence ~1.5s after last voice ends the turn.
@@ -112,9 +114,9 @@ final class SpeechService: SpeechServicing {
         try audio.enterRecordMode()
         try startEngine(appendingTo: request)
 
-        task = recognizer.recognitionTask(with: request) { [weak self] result, _ in
+        task = Self.makeTask(recognizer: recognizer, request: request) { [weak self] text, isFinal in
             Task { @MainActor in
-                self?.apply(result)
+                self?.apply(text: text, isFinal: isFinal)
             }
         }
         startSilenceWatch()
@@ -142,9 +144,7 @@ final class SpeechService: SpeechServicing {
         let input = engine.inputNode
         let format = input.outputFormat(forBus: 0)
         input.removeTap(onBus: 0)
-        input.installTap(onBus: 0, bufferSize: 1024, format: format) { [weak self] buffer, _ in
-            request.append(buffer)
-            let energy = Self.bufferRMS(buffer)
+        Self.installTap(on: input, format: format, appendingTo: request) { [weak self] energy in
             Task { @MainActor in
                 self?.heardEnergy(energy)
             }
@@ -153,23 +153,67 @@ final class SpeechService: SpeechServicing {
         try engine.start()
     }
 
+    /// Speech and AVFAudio hand back non-`Sendable` closures. Built inside a `@MainActor` member they would
+    /// inherit that isolation and trap when the framework calls them off the main queue, so both are made
+    /// here, `nonisolated`, and only `Sendable` values cross back.
+    private nonisolated static func makeTask(
+        recognizer: SFSpeechRecognizer,
+        request: SFSpeechAudioBufferRecognitionRequest,
+        onTranscript: @escaping @Sendable (String, Bool) -> Void
+    ) -> SFSpeechRecognitionTask {
+        recognizer.recognitionTask(with: request) { result, _ in
+            guard let result else { return }
+            onTranscript(result.bestTranscription.formattedString, result.isFinal)
+        }
+    }
+
+    private nonisolated static func installTap(
+        on input: AVAudioInputNode,
+        format: AVAudioFormat,
+        appendingTo request: SFSpeechAudioBufferRecognitionRequest,
+        onEnergy: @escaping @Sendable (Float) -> Void
+    ) {
+        input.installTap(onBus: 0, bufferSize: 1024, format: format) { buffer, _ in
+            request.append(buffer)
+            onEnergy(bufferRMS(buffer))
+        }
+    }
+
     private func heardEnergy(_ rms: Float) {
         onLevelChange?(SpeechEnergy.normalizedLevel(rms: rms))
         guard rms >= SpeechEnergy.voiceFloor else { return }
         watch.heardVoice(at: Date())
     }
 
-    private func apply(_ result: SFSpeechRecognitionResult?) {
-        guard let result else { return }
-        let text = result.bestTranscription.formattedString
-        if result.isFinal {
+    private func apply(text: String, isFinal: Bool) {
+        if isFinal {
             committedText = text
             partialText = ""
         } else {
             partialText = text
         }
+        if ContinuationPhrase.suggestsMore(text) {
+            watch.allowLongerPause()
+        }
         watch.heardVoice(at: Date())
         onTranscriptChange?()
+    }
+
+    /// Tap-to-stop. Promotes any partial the recogniser has not finalised, so ending early never
+    /// loses the words already on screen.
+    func endTurn() {
+        silenceTask?.cancel()
+        silenceTask = nil
+        commitPartialIfNeeded()
+        onTranscriptChange?()
+        request?.endAudio()
+        stopEngineKeepingTranscript()
+    }
+
+    private func commitPartialIfNeeded() {
+        guard committedText.isEmpty else { return }
+        committedText = partialText
+        partialText = ""
     }
 
     private func startSilenceWatch() {
@@ -179,10 +223,7 @@ final class SpeechService: SpeechServicing {
                 guard let self, !Task.isCancelled else { return }
                 if self.watch.shouldStop(now: Date()) {
                     LoggingPolicy.log(.speechSilenceStop, category: .speech)
-                    if self.committedText.isEmpty {
-                        self.committedText = self.partialText
-                        self.partialText = ""
-                    }
+                    self.commitPartialIfNeeded()
                     self.onTranscriptChange?()
                     self.request?.endAudio()
                     self.stopEngineKeepingTranscript()
@@ -208,7 +249,7 @@ final class SpeechService: SpeechServicing {
         onTurnEnded?()
     }
 
-    private static func bufferRMS(_ buffer: AVAudioPCMBuffer) -> Float {
+    private nonisolated static func bufferRMS(_ buffer: AVAudioPCMBuffer) -> Float {
         guard let channel = buffer.floatChannelData?[0] else { return 0 }
         let count = Int(buffer.frameLength)
         return SpeechEnergy.rms(samples: UnsafeBufferPointer(start: channel, count: count))

@@ -15,6 +15,8 @@ final class CaptureViewModel {
     var listenLevel: CGFloat = 0
     /// Classified intent on the confirmation sheet or while clarifying. Nil in idle.
     var pendingIntent: ParsedIntent?
+    /// One turn that held several captures, each awaiting a destination. Empty unless routing.
+    var pendingItems: [RoutedItem] = []
     var successMessage: String?
     var successDestination: CaptureDestination?
     /// Quiet fact when settings could not refresh. Capture still works.
@@ -33,7 +35,8 @@ final class CaptureViewModel {
     private var saveTask: Task<Void, Never>?
     private var speakTask: Task<Void, Never>?
     private var successTask: Task<Void, Never>?
-    private var lastSave: LastSave?
+    /// Everything written by the last save, so Undo can take back all of it, not just the last item.
+    private var lastSaves: [LastSave] = []
     private let undoWindow: TimeInterval
     private let defaults: UserDefaults
     private(set) var hasLeftFirstRun: Bool
@@ -41,6 +44,11 @@ final class CaptureViewModel {
     private var usedClarificationLoop = false
     private var isClarificationListen = false
     var clarificationAnswer: String?
+
+    /// Full-screen routing while a multi-part turn waits on destinations.
+    var showsRouting: Bool {
+        state == .routing && !pendingItems.isEmpty
+    }
 
     /// Full-screen clarify while speaking, listening for the answer, or thinking.
     var showsClarification: Bool {
@@ -110,11 +118,12 @@ final class CaptureViewModel {
             transcriptPartial = ""
             listenLevel = 0
             pendingIntent = nil
+            pendingItems = []
             clarificationAnswer = nil
             usedClarificationLoop = false
             isClarificationListen = false
             successTask?.cancel()
-            lastSave = nil
+            lastSaves = []
             successMessage = nil
             successDestination = nil
             settingsFact = nil
@@ -150,8 +159,18 @@ final class CaptureViewModel {
         canCapture && state == .idle && !hasLeftFirstRun
     }
 
+    /// True while a list is in progress, so the screen can explain the longer pause.
+    var isWaitingForMore: Bool {
+        state == .listening
+            && ContinuationPhrase.suggestsMore(transcriptText + " " + transcriptPartial)
+    }
+
     func tapWell() {
         guard canCapture, !isStartingListen else { return }
+        if state == .listening {
+            endListeningByTap()
+            return
+        }
         guard state == .idle || state == .clarifying || state == .success else { return }
         guard speech.isOnDeviceAvailable else { return }
         if state == .success {
@@ -205,6 +224,13 @@ final class CaptureViewModel {
 
     func flushPendingSuccess() async {
         await successTask?.value
+    }
+
+    /// Tapping the well while it listens ends the turn there and then. Whatever was already heard is
+    /// kept and processed; an empty turn simply returns to idle. Nothing the user said is thrown away.
+    private func endListeningByTap() {
+        listenLevel = 0
+        speech.endTurn()
     }
 
     func cancelListening() {
@@ -284,6 +310,10 @@ final class CaptureViewModel {
 
     /// Session 72: skip the sheet when confirm-before-save is off and the parse is confident.
     private func finishCapture(spoken: String) async {
+        if !usedClarificationLoop, let items = routedItems(from: spoken) {
+            beginRouting(items)
+            return
+        }
         let classified = classifier.classify(parser.parse(spoken))
         transcriptText = classified.taskText
         if classified.needsClarification || classified.confidence < 0.5 || classified.destination == nil {
@@ -306,6 +336,85 @@ final class CaptureViewModel {
             return
         }
         await save(classified, destination: destination)
+    }
+
+    /// Nil when the turn is a single capture, so the existing one-item path is untouched.
+    private func routedItems(from spoken: String) -> [RoutedItem]? {
+        let segments = TranscriptSplitter.segments(spoken)
+        guard segments.count > 1 else { return nil }
+        let items = segments
+            .map { RoutedItem(intent: classifier.classify(parser.parse($0))) }
+            .filter { !$0.title.isEmpty }
+        return items.count > 1 ? items : nil
+    }
+
+    private func beginRouting(_ items: [RoutedItem]) {
+        pendingItems = items
+        pendingIntent = nil
+        speechFact = nil
+        transcriptPartial = ""
+        state = .routing
+        LoggingPolicy.log(.captureState(.routing), category: .capture)
+    }
+
+    func setDestination(_ destination: CaptureDestination, for id: RoutedItem.ID) {
+        guard let index = pendingItems.firstIndex(where: { $0.id == id }) else { return }
+        pendingItems[index].destination = destination
+    }
+
+    func routingCancel() {
+        guard state == .routing else { return }
+        pendingItems = []
+        transcriptText = ""
+        transcriptPartial = ""
+        speechFact = nil
+        state = .idle
+        LoggingPolicy.log(.captureState(.idle), category: .capture)
+    }
+
+    /// Saves every routed item. Partial success still lands, and Undo takes back whatever was written.
+    func confirmRoutedSave() async {
+        guard state == .routing, pendingItems.allRouted else { return }
+        let items = pendingItems
+        state = .saving
+        LoggingPolicy.log(.captureState(.saving), category: .capture)
+
+        var saves: [LastSave] = []
+        var lastError: String?
+        for item in items {
+            guard let destination = item.destination else { continue }
+            var intent = item.intent
+            intent.taskText = item.title
+            do {
+                saves.append(try await performSave(intent, destination: destination))
+            } catch let error as EventKitServiceError {
+                lastError = destination == .event
+                    ? EventKitCopy.eventFact(for: error)
+                    : EventKitCopy.reminderFact(for: error)
+            } catch {
+                lastError = destination == .event
+                    ? EventKitCopy.calendarAccessNeeded
+                    : EventKitCopy.remindersAccessNeeded
+            }
+        }
+
+        pendingItems = []
+        pendingIntent = nil
+        usedClarificationLoop = false
+        clarificationAnswer = nil
+
+        guard let first = saves.first else {
+            speechFact = lastError ?? EventKitCopy.remindersAccessNeeded
+            state = .idle
+            LoggingPolicy.log(.captureState(.idle), category: .capture)
+            return
+        }
+        speechFact = lastError
+        beginSuccess(
+            saves: saves,
+            destination: first.destination,
+            message: RoutingCopy.savedMessage(saves.count)
+        )
     }
 
     private func beginClarifying(_ classified: ParsedIntent) {
@@ -371,6 +480,7 @@ final class CaptureViewModel {
         speech.stop()
         listenLevel = 0
         pendingIntent = nil
+        pendingItems = []
         clarificationAnswer = nil
         usedClarificationLoop = false
         isClarificationListen = false
@@ -402,42 +512,57 @@ final class CaptureViewModel {
         LoggingPolicy.log(.captureState(.idle), category: .capture)
     }
 
+    /// Writes one item to EventKit and history. Shared by the single and multi-capture paths.
+    private func performSave(
+        _ intent: ParsedIntent,
+        destination: CaptureDestination
+    ) async throws -> LastSave {
+        if destination == .reminder {
+            await permissions.request(.reminders)
+        } else {
+            await permissions.request(.calendar)
+        }
+        let identifier: String
+        switch destination {
+        case .reminder:
+            identifier = try await eventKit.createReminder(
+                title: intent.taskText,
+                due: intent.date,
+                hasExplicitTime: intent.hasExplicitTime
+            )
+        case .event:
+            guard let start = intent.date else { throw EventKitServiceError.missingStart }
+            identifier = try await eventKit.createEvent(
+                title: intent.taskText,
+                start: start,
+                durationMinutes: intent.durationMinutes
+            )
+        }
+        let captureID = try persistHistory(intent, destination: destination, identifier: identifier)
+        return LastSave(
+            captureID: captureID,
+            eventKitIdentifier: identifier,
+            destination: destination
+        )
+    }
+
     private func save(_ intent: ParsedIntent, destination: CaptureDestination) async {
         state = .saving
         LoggingPolicy.log(.captureState(.saving), category: .capture)
         do {
-            if destination == .reminder {
-                await permissions.request(.reminders)
-            } else {
-                await permissions.request(.calendar)
-            }
-            let identifier: String
-            switch destination {
-            case .reminder:
-                identifier = try await eventKit.createReminder(
-                    title: intent.taskText,
-                    due: intent.date,
-                    hasExplicitTime: intent.hasExplicitTime
-                )
-            case .event:
-                guard let start = intent.date else { throw EventKitServiceError.missingStart }
-                identifier = try await eventKit.createEvent(
-                    title: intent.taskText,
-                    start: start,
-                    durationMinutes: intent.durationMinutes
-                )
-            }
-            let captureID = try persistHistory(intent, destination: destination, identifier: identifier)
+            let save = try await performSave(intent, destination: destination)
             pendingIntent = nil
             clarificationAnswer = nil
             usedClarificationLoop = false
             speechFact = nil
             beginSuccess(
-                captureID: captureID,
-                identifier: identifier,
+                saves: [save],
                 destination: destination,
-                date: intent.date,
-                hasExplicitTime: intent.hasExplicitTime
+                message: SuccessCopy.message(
+                    destination: destination,
+                    date: intent.date,
+                    hasExplicitTime: intent.hasExplicitTime
+                )
             )
         } catch let error as EventKitServiceError {
             pendingIntent = nil
@@ -480,23 +605,13 @@ final class CaptureViewModel {
     }
 
     private func beginSuccess(
-        captureID: UUID?,
-        identifier: String,
+        saves: [LastSave],
         destination: CaptureDestination,
-        date: Date?,
-        hasExplicitTime: Bool
+        message: String
     ) {
-        lastSave = LastSave(
-            captureID: captureID,
-            eventKitIdentifier: identifier,
-            destination: destination
-        )
+        lastSaves = saves
         successDestination = destination
-        successMessage = SuccessCopy.message(
-            destination: destination,
-            date: date,
-            hasExplicitTime: hasExplicitTime
-        )
+        successMessage = message
         state = .success
         LoggingPolicy.log(.captureState(.success), category: .capture)
         successTask?.cancel()
@@ -508,48 +623,54 @@ final class CaptureViewModel {
         }
     }
 
+    /// Takes back everything the last save wrote. One failure does not strand the rest.
     func undoSave() async {
-        guard state == .success, let save = lastSave else { return }
+        guard state == .success, !lastSaves.isEmpty else { return }
         successTask?.cancel()
-        do {
-            if let context = modelContext, let captureID = save.captureID {
-                let id = captureID
-                var descriptor = FetchDescriptor<Capture>(
-                    predicate: #Predicate { $0.id == id }
-                )
-                descriptor.fetchLimit = 1
-                if let row = try context.fetch(descriptor).first {
-                    try await HistoryDelete.apply(
-                        row,
-                        scope: .alsoExternal,
-                        context: context,
-                        eventKit: eventKit
-                    )
-                } else {
-                    try await eventKit.deleteItem(identifier: save.eventKitIdentifier)
-                }
-            } else {
-                try await eventKit.deleteItem(identifier: save.eventKitIdentifier)
+        let saves = lastSaves
+        var fact: String?
+        for save in saves {
+            do {
+                try await undoOne(save)
+            } catch let error as EventKitServiceError {
+                fact = EventKitCopy.openFact(for: error, destination: save.destination)
+            } catch {
+                fact = HistoryCopy.deleteNeeded
             }
-            finishSuccessWindow()
-        } catch let error as EventKitServiceError {
-            speechFact = EventKitCopy.openFact(for: error, destination: save.destination)
-            finishSuccessWindow()
-        } catch {
-            speechFact = HistoryCopy.deleteNeeded
-            finishSuccessWindow()
+        }
+        speechFact = fact
+        finishSuccessWindow()
+    }
+
+    private func undoOne(_ save: LastSave) async throws {
+        guard let context = modelContext, let captureID = save.captureID else {
+            try await eventKit.deleteItem(identifier: save.eventKitIdentifier)
+            return
+        }
+        let id = captureID
+        var descriptor = FetchDescriptor<Capture>(predicate: #Predicate { $0.id == id })
+        descriptor.fetchLimit = 1
+        if let row = try context.fetch(descriptor).first {
+            try await HistoryDelete.apply(
+                row,
+                scope: .alsoExternal,
+                context: context,
+                eventKit: eventKit
+            )
+        } else {
+            try await eventKit.deleteItem(identifier: save.eventKitIdentifier)
         }
     }
 
     private func leaveSuccessKeepingSave() {
         successTask?.cancel()
-        lastSave = nil
+        lastSaves = []
         successMessage = nil
         successDestination = nil
     }
 
     private func finishSuccessWindow() {
-        lastSave = nil
+        lastSaves = []
         successMessage = nil
         successDestination = nil
         transcriptText = ""

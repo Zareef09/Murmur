@@ -1,7 +1,9 @@
 import SwiftUI
 
-/// Always lowercase `murmur`, Hanken Grotesk light, tracked 0.13em. Never bold, never another family.
+/// `Murmur` in Hanken Grotesk light, tracked 0.13em. Never bold, never another family.
 struct Wordmark: View {
+    static let text = "Murmur"
+
     enum Tone {
         case primary
         case inverse
@@ -20,7 +22,7 @@ struct Wordmark: View {
 
     var body: some View {
         HStack(alignment: .firstTextBaseline, spacing: cap * 0.16) {
-            Text("murmur")
+            Text(Self.text)
                 .font(MurmurType.core(size: cap, relativeTo: .title, weight: .light))
                 .tracking(cap * trackingEm)
                 .foregroundStyle(color)
@@ -32,7 +34,7 @@ struct Wordmark: View {
             }
         }
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel("murmur")
+        .accessibilityLabel(Self.text)
     }
 
     private var dotSize: CGFloat { max(4, cap * 0.145) }

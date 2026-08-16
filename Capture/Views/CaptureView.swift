@@ -28,7 +28,9 @@ struct CaptureView: View {
 
     var body: some View {
         Group {
-            if model.showsClarification {
+            if model.showsRouting {
+                RoutingView(model: model)
+            } else if model.showsClarification {
                 ClarificationView(model: model)
             } else if model.canCapture {
                 ZStack(alignment: .bottom) {
@@ -77,11 +79,12 @@ struct CaptureView: View {
         }
     }
 
+    /// The well sits dead centre of the free space. Transcript hangs above it and the footnote below,
+    /// both in overlays, so neither can push the well off centre as they appear and disappear.
     private var captureHome: some View {
         VStack(spacing: 0) {
             chrome
-            VStack(spacing: MurmurSpace.space9) {
-                heroSlot
+            ZStack {
                 CaptureBloom(
                     state: bloomState,
                     level: model.state == .listening ? model.listenLevel : 0,
@@ -91,17 +94,32 @@ struct CaptureView: View {
                     onTap: { model.tapWell() }
                 )
                 .allowsHitTesting(wellInteractive)
-                bloomFoot
+
+                VStack(spacing: 0) {
+                    heroSlot
+                    Spacer(minLength: MurmurSpace.space9)
+                }
+
+                VStack(spacing: 0) {
+                    Spacer(minLength: MurmurSpace.space9)
+                    bloomFoot
+                }
+                .animation(
+                    MurmurMotion.animation(.exhale, .normal, reduceMotion: reduceMotion),
+                    value: footHint
+                )
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .padding(.horizontal, MurmurSpace.gutterScreen)
-            .padding(.bottom, MurmurSpace.space10)
             successSlot
         }
     }
 
+    /// Listening is interactive too: tapping again ends the turn, which is the only way to stop a
+    /// long list early.
     private var wellInteractive: Bool {
-        canUseWell && !isConfirming && (model.state == .idle || model.state == .success)
+        canUseWell && !isConfirming
+            && (model.state == .idle || model.state == .success || model.state == .listening)
     }
 
     private var chrome: some View {
@@ -134,21 +152,37 @@ struct CaptureView: View {
         }
     }
 
+    /// Teaches the joining words, and explains the longer pause once they are heard.
     @ViewBuilder
     private var bloomFoot: some View {
-        if model.showsFirstRun {
-            Text(CaptureCopy.firstRunFootnote)
+        if let hint = footHint {
+            Text(hint)
                 .font(MurmurType.footnote)
                 .tracking(MurmurType.trackingFootnote)
                 .foregroundStyle(MurmurColor.textTertiary)
                 .multilineTextAlignment(.center)
                 .frame(maxWidth: 26 * 10, alignment: .center)
                 .fixedSize(horizontal: false, vertical: true)
+                .transition(.opacity)
+                .id(hint)
         } else {
             Color.clear
                 .frame(height: 18)
                 .accessibilityHidden(true)
         }
+    }
+
+    private var footHint: String? {
+        if model.showsFirstRun {
+            return CaptureCopy.firstRunFootnote
+        }
+        if model.isWaitingForMore {
+            return CaptureCopy.listeningMoreHint
+        }
+        if model.state == .idle || model.state == .listening {
+            return CaptureCopy.multiHint
+        }
+        return nil
     }
 
     private var successSlot: some View {
