@@ -37,7 +37,7 @@ function CaptureScreen({ state = 'idle', onTap, onHistory, onSettings }) {
       <StatusBar />
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 var(--space-4)', flex: '0 0 auto' }}>
         <IconButton name="list" label="History" onClick={onHistory} />
-        <Wordmark size={19} dot={false} style={{ color: 'var(--text-tertiary)', letterSpacing: '.16em' }} />
+        <span style={{ font: 'var(--weight-medium) 16px/1 var(--font-core)', color: 'var(--text-secondary)', letterSpacing: '.14em' }}>Murmur</span>
         <IconButton name="settings" label="Settings" onClick={onSettings} />
       </div>
 

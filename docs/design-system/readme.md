@@ -111,7 +111,7 @@ Quiet motion, always decelerating, as though everything had a little weight and 
 - **Sizes:** 13–14px inside chips and captions, 16px trailing chevrons, 19–20px row leading and buttons, 26px in empty states. Icons sit at `--text-tertiary` when decorative, at the destination hue when semantic.
 - **No emoji, ever.** No unicode glyphs as icons; the only unicode ornament is the middle dot `·`. No icon fonts. No custom-drawn illustration — the one piece of brand geometry (the well, the icon, the wordmark dot) is built from CSS circles, not artwork.
 - **Semantic pairs that must stay fixed:** Reminder → `bell` + moss; Event → `calendar` + plum; granted → `check` + leaf; needs attention → `circle-alert` + clay; listening → the capture well itself, never a mic glyph.
-- **Logo:** no logo was supplied, and none was drawn. The mark is a type treatment (`Wordmark`) plus the icon geometry (`AppIcon`), both authored here at the brief's request; there is no `assets/logo.svg`.
+- **Logo:** no logo was supplied. The app logo is the letter **M** (`AppIconM`) — a single monoline stroke, flat ground, no other geometry — paired with a wordmark (`Wordmark`) now also set as `M`. The earlier Light Well icon geometry (`AppIcon`) remains for the capture screen states. There is no `assets/logo.svg`.
 
 ---
 
@@ -133,7 +133,7 @@ Quiet motion, always decelerating, as though everything had a little weight and 
 **`components/capture/`** — `CaptureBloom` (the signature light well, 4 states), `Transcript` (live caption), `SuccessBar` (success + Undo).
 **`components/fields/`** — `EditableField` (tap-to-edit parsed value), `DestinationToggle` (Reminder ↔ Event), `ToggleRow` (settings preference).
 **`components/data/`** — `DestinationBadge` (chip / glyph / quiet), `HistoryRow` (with swipe-to-delete), `PermissionRow` (granted / needed), `EmptyState`.
-**`components/brand/`** — `Wordmark`, `AppIcon`.
+**`components/brand/`** — `Wordmark` (the letter M), `AppIconM` (the app logo), `AppIcon` (Light Well, capture screen).
 
 Every component has a sibling `.d.ts` (props contract) and `.prompt.md` (what & when, usage, variants). Each directory has one `@dsCard` HTML showing its states densely.
 

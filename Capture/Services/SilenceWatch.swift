@@ -30,6 +30,34 @@ struct SilenceWatch: Equatable, Sendable {
     }
 }
 
+/// Collects the finalised segments of one spoken turn.
+///
+/// Speech finalises one result per utterance segment, and a pause — exactly the pause after "then"
+/// — starts a new one. Each final carries only its own segment, so they must be joined; keeping the
+/// latest would silently drop everything said before it.
+struct TranscriptAccumulator: Equatable, Sendable {
+    private(set) var segments: [String] = []
+
+    var text: String {
+        segments.joined(separator: " ")
+    }
+
+    var isEmpty: Bool {
+        segments.isEmpty
+    }
+
+    /// Ignores blank segments, and repeats of the segment already recorded.
+    mutating func append(_ raw: String) {
+        let trimmed = raw.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty, segments.last != trimmed else { return }
+        segments.append(trimmed)
+    }
+
+    mutating func reset() {
+        segments = []
+    }
+}
+
 /// Words that say "there is more coming". Used to hold the mic open, never to split text.
 enum ContinuationPhrase {
     static let words = ["and", "then", "also", "plus", "next", "after that", "as well as"]

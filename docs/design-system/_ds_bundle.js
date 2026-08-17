@@ -1,4 +1,4 @@
-/* @ds-bundle: {"format":4,"namespace":"MurmurDesignSystem_545ca7","components":[{"name":"AppIcon","sourcePath":"components/brand/AppIcon.jsx"},{"name":"Wordmark","sourcePath":"components/brand/Wordmark.jsx"},{"name":"CaptureBloom","sourcePath":"components/capture/CaptureBloom.jsx"},{"name":"SuccessBar","sourcePath":"components/capture/SuccessBar.jsx"},{"name":"Transcript","sourcePath":"components/capture/Transcript.jsx"},{"name":"Button","sourcePath":"components/core/Button.jsx"},{"name":"Icon","sourcePath":"components/core/Icon.jsx"},{"name":"IconButton","sourcePath":"components/core/IconButton.jsx"},{"name":"DestinationBadge","sourcePath":"components/data/DestinationBadge.jsx"},{"name":"EmptyState","sourcePath":"components/data/EmptyState.jsx"},{"name":"HistoryRow","sourcePath":"components/data/HistoryRow.jsx"},{"name":"PermissionRow","sourcePath":"components/data/PermissionRow.jsx"},{"name":"DestinationToggle","sourcePath":"components/fields/DestinationToggle.jsx"},{"name":"EditableField","sourcePath":"components/fields/EditableField.jsx"},{"name":"ToggleRow","sourcePath":"components/fields/ToggleRow.jsx"}],"sourceHashes":{"components/brand/AppIcon.jsx":"130528f76cce","components/brand/Wordmark.jsx":"3f1a2e76a7c0","components/capture/CaptureBloom.jsx":"82756cd9c5f0","components/capture/SuccessBar.jsx":"f3bf5c1129a8","components/capture/Transcript.jsx":"f1a0eff3a484","components/core/Button.jsx":"b986543220f1","components/core/Icon.jsx":"b8b6178547c4","components/core/IconButton.jsx":"e808a5e8055d","components/data/DestinationBadge.jsx":"e30926f7532e","components/data/EmptyState.jsx":"89b9f6fa6a3c","components/data/HistoryRow.jsx":"0213a9f7cef6","components/data/PermissionRow.jsx":"81e2f30e5a77","components/fields/DestinationToggle.jsx":"6ba4b9e0d075","components/fields/EditableField.jsx":"b5056d97f169","components/fields/ToggleRow.jsx":"e71ed9cd4e5c","ui_kits/murmur-ios/App.jsx":"2827cde8343e","ui_kits/murmur-ios/CaptureScreen.jsx":"56332cb80418","ui_kits/murmur-ios/ClarifyScreen.jsx":"e485f617ae92","ui_kits/murmur-ios/ConfirmSheet.jsx":"8c9e0e9038ea","ui_kits/murmur-ios/ListScreens.jsx":"651260fc1d7f","ui_kits/murmur-ios/OnboardingScreen.jsx":"5a29a09c2c1d","ui_kits/murmur-ios/Phone.jsx":"2d4e7f459964"},"inlinedExternals":[],"unexposedExports":[]} */
+/* @ds-bundle: {"format":4,"namespace":"MurmurDesignSystem_545ca7","components":[{"name":"AppIcon","sourcePath":"components/brand/AppIcon.jsx"},{"name":"AppIconM","sourcePath":"components/brand/AppIconM.jsx"},{"name":"Wordmark","sourcePath":"components/brand/Wordmark.jsx"},{"name":"CaptureBloom","sourcePath":"components/capture/CaptureBloom.jsx"},{"name":"SuccessBar","sourcePath":"components/capture/SuccessBar.jsx"},{"name":"Transcript","sourcePath":"components/capture/Transcript.jsx"},{"name":"Button","sourcePath":"components/core/Button.jsx"},{"name":"Icon","sourcePath":"components/core/Icon.jsx"},{"name":"IconButton","sourcePath":"components/core/IconButton.jsx"},{"name":"DestinationBadge","sourcePath":"components/data/DestinationBadge.jsx"},{"name":"EmptyState","sourcePath":"components/data/EmptyState.jsx"},{"name":"HistoryRow","sourcePath":"components/data/HistoryRow.jsx"},{"name":"PermissionRow","sourcePath":"components/data/PermissionRow.jsx"},{"name":"DestinationToggle","sourcePath":"components/fields/DestinationToggle.jsx"},{"name":"EditableField","sourcePath":"components/fields/EditableField.jsx"},{"name":"ToggleRow","sourcePath":"components/fields/ToggleRow.jsx"}],"sourceHashes":{"components/brand/AppIcon.jsx":"130528f76cce","components/brand/AppIconM.jsx":"5a72b14ac1ad","components/brand/Wordmark.jsx":"579ecd1af394","components/capture/CaptureBloom.jsx":"5f7718381c95","components/capture/SuccessBar.jsx":"f3bf5c1129a8","components/capture/Transcript.jsx":"f1a0eff3a484","components/core/Button.jsx":"b986543220f1","components/core/Icon.jsx":"b8b6178547c4","components/core/IconButton.jsx":"e808a5e8055d","components/data/DestinationBadge.jsx":"e30926f7532e","components/data/EmptyState.jsx":"89b9f6fa6a3c","components/data/HistoryRow.jsx":"0213a9f7cef6","components/data/PermissionRow.jsx":"81e2f30e5a77","components/fields/DestinationToggle.jsx":"6ba4b9e0d075","components/fields/EditableField.jsx":"b5056d97f169","components/fields/ToggleRow.jsx":"e71ed9cd4e5c","ui_kits/murmur-ios/App.jsx":"2827cde8343e","ui_kits/murmur-ios/CaptureScreen.jsx":"7e906769a97a","ui_kits/murmur-ios/ClarifyScreen.jsx":"e485f617ae92","ui_kits/murmur-ios/ConfirmSheet.jsx":"8c9e0e9038ea","ui_kits/murmur-ios/ListScreens.jsx":"651260fc1d7f","ui_kits/murmur-ios/OnboardingScreen.jsx":"5a29a09c2c1d","ui_kits/murmur-ios/Phone.jsx":"2d4e7f459964"},"inlinedExternals":[],"unexposedExports":[]} */
 
 (() => {
 
@@ -55,12 +55,57 @@ function AppIcon({
 Object.assign(__ds_scope, { AppIcon });
 })(); } catch (e) { __ds_ns.__errors.push({ path: "components/brand/AppIcon.jsx", error: String((e && e.message) || e) }); }
 
+// components/brand/AppIconM.jsx
+try { (() => {
+/**
+ * AppIconM — the app logo: a single letter M, drawn as one continuous
+ * monoline stroke with soft rounded joints, echoing Hanken Grotesk's soft
+ * terminals. Flat ground, one hairline, one soft shadow — the M is the
+ * whole mark; nothing else competes with it.
+ */
+function AppIconM({
+  size = 120,
+  theme = 'dark',
+  style
+}) {
+  const dark = theme === 'dark';
+  const bg = dark ? 'var(--sand-1000)' : 'var(--sand-50)';
+  const ink = dark ? '#F2EBDF' : 'var(--sand-900)';
+  const hairlineRgb = dark ? '242,235,223' : '33,29,24';
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: 'relative',
+      width: size,
+      height: size,
+      borderRadius: 'var(--radius-icon)',
+      flex: '0 0 auto',
+      background: bg,
+      border: `1px solid rgba(${hairlineRgb},.09)`,
+      boxShadow: 'var(--shadow-card)',
+      ...style
+    }
+  }, /*#__PURE__*/React.createElement("svg", {
+    viewBox: "0 0 100 100",
+    width: "100%",
+    height: "100%"
+  }, /*#__PURE__*/React.createElement("polyline", {
+    points: "23,76 23,24 50,58 77,24 77,76",
+    fill: "none",
+    stroke: ink,
+    strokeWidth: "10.5",
+    strokeLinecap: "round",
+    strokeLinejoin: "round"
+  })));
+}
+Object.assign(__ds_scope, { AppIconM });
+})(); } catch (e) { __ds_ns.__errors.push({ path: "components/brand/AppIconM.jsx", error: String((e && e.message) || e) }); }
+
 // components/brand/Wordmark.jsx
 try { (() => {
 /**
- * Wordmark — "murmur" set in the core face at 300, generously tracked, always
- * lowercase. The ember dot after the final r is the captured thought: the mark
- * is a sentence let out and safely kept.
+ * Wordmark — the single letter "M" set in the core face at 300, always
+ * lowercase-weighted. The ember dot beside it is the captured thought: the
+ * mark is a sentence let out and safely kept.
  */
 function Wordmark({
   size = 28,
@@ -79,7 +124,7 @@ function Wordmark({
       color,
       ...style
     }
-  }, "murmur", dot ? /*#__PURE__*/React.createElement("span", {
+  }, "M", dot ? /*#__PURE__*/React.createElement("span", {
     style: {
       width: Math.max(4, size * 0.145),
       height: Math.max(4, size * 0.145),
@@ -176,15 +221,30 @@ Object.assign(__ds_scope, { Icon });
 // components/capture/CaptureBloom.jsx
 try { (() => {
 /**
- * CaptureBloom — Murmur's signature interaction: a "light well". A warm bloom of
- * light behind three hairline rings. The rings answer the voice with staggered
- * lag so the response reads as breathing, not as a level meter.
+ * CaptureBloom — Murmur's signature interaction: a bead of iridescent glass held
+ * inside a guilloché lattice, ringed by a progress arc.
  *
- *   idle      slow 3.8s breath, core dim, one clear tap target
- *   listening bloom opens with `level`; rings follow at 0 / 90 / 180ms lag
- *   thinking  bloom contracts and holds; a single arc drifts around the rim
- *   done      rings settle to rest, core fills, a check fades up
+ * Three parts, each doing one job:
+ *   glass    wide iridescent gradients turning at incommensurable rates behind a
+ *            spherical shade, so the surface reads as light on a film
+ *   lattice  a procedural rosette (28 circles on an offset orbit) counter-turning
+ *            in two layers — it is the "listening field", brightening with voice
+ *   arc      a single ember→violet sweep on the rim: the only progress signal
+ *
+ *   idle      slow breath, arc resting at a third, lattice dim
+ *   listening arc extends with `level`, lattice and glass brighten
+ *   thinking  arc detaches into a short travelling sweep
+ *   done      arc closes to full, glass blooms, a check fades up
  */
+const LATTICE = Array.from({
+  length: 28
+}, (_, i) => {
+  const a = i / 28 * Math.PI * 2;
+  return {
+    cx: 50 + 17 * Math.cos(a),
+    cy: 50 + 17 * Math.sin(a)
+  };
+});
 function CaptureBloom({
   state = 'idle',
   level = 0,
@@ -196,17 +256,16 @@ function CaptureBloom({
   const listening = state === 'listening';
   const thinking = state === 'thinking';
   const done = state === 'done';
+  const idle = state === 'idle';
   const l = Math.max(0, Math.min(1, level));
-  const ring = (pct, lag, weight) => ({
-    position: 'absolute',
-    inset: `${(100 - pct) / 2}%`,
-    borderRadius: '50%',
-    border: `${weight}px solid var(--accent)`,
-    opacity: done ? 0.16 : listening ? 0.20 + l * 0.34 : thinking ? 0.20 : 0.16,
-    transform: `scale(${listening ? 1 + l * 0.10 : thinking ? 0.94 : 1})`,
-    transition: `transform var(--dur-slow) var(--ease-exhale) ${lag}ms, opacity var(--dur-normal) var(--ease-exhale) ${lag}ms`,
-    animation: state === 'idle' ? `mm-breathe var(--dur-breath) var(--ease-inhale) ${lag * 4}ms infinite` : 'none'
-  });
+  const breath = idle || listening;
+
+  // arc sweep in degrees
+  const sweep = done ? 360 : thinking ? 108 : listening ? 120 + l * 210 : 124;
+  const uid = React.useId().replace(/[^a-zA-Z0-9]/g, '');
+  const R = 48.4,
+    CIRC = 2 * Math.PI * R,
+    dash = sweep / 360 * CIRC;
   return /*#__PURE__*/React.createElement("div", {
     style: {
       display: 'flex',
@@ -233,49 +292,198 @@ function CaptureBloom({
   }, /*#__PURE__*/React.createElement("div", {
     style: {
       position: 'absolute',
-      inset: '-26%',
+      inset: '-34%',
       borderRadius: '50%',
-      background: 'radial-gradient(circle at 50% 50%, var(--accent-glow) 0%, var(--accent-glow-faint) 42%, transparent 68%)',
-      transform: `scale(${listening ? 0.86 + l * 0.42 : thinking ? 0.74 : done ? 0.9 : 0.8})`,
-      opacity: listening ? 0.55 + l * 0.45 : thinking ? 0.6 : done ? 0.7 : 0.42,
-      transition: 'transform var(--dur-slow) var(--ease-exhale), opacity var(--dur-slow) var(--ease-exhale)',
-      filter: 'blur(2px)'
+      pointerEvents: 'none',
+      background: 'radial-gradient(circle at 32% 62%, var(--accent-glow) 0%, transparent 52%), radial-gradient(circle at 68% 34%, rgba(169,139,255,.30) 0%, transparent 54%)',
+      filter: `blur(${Math.round(size * 0.09)}px)`,
+      transform: `scale(${listening ? 1 + l * 0.16 : thinking ? 0.9 : done ? 1.1 : 0.96})`,
+      opacity: listening ? 0.9 + l * 0.1 : thinking ? 0.62 : done ? 1 : 0.62,
+      transition: 'transform var(--dur-slow) var(--ease-exhale), opacity var(--dur-slow) var(--ease-exhale)'
     }
-  }), /*#__PURE__*/React.createElement("div", {
-    style: ring(100, 180, 1)
-  }), /*#__PURE__*/React.createElement("div", {
-    style: ring(76, 90, 1)
-  }), /*#__PURE__*/React.createElement("div", {
-    style: ring(54, 0, 1.5)
   }), /*#__PURE__*/React.createElement("div", {
     style: {
       position: 'absolute',
-      inset: '12%',
+      inset: 0,
       borderRadius: '50%',
-      border: '1.5px solid transparent',
-      borderTopColor: 'var(--accent)',
-      opacity: thinking ? 0.85 : 0,
+      pointerEvents: 'none',
+      animation: thinking ? 'mm-drift 2400ms linear infinite' : 'none'
+    }
+  }, /*#__PURE__*/React.createElement("svg", {
+    viewBox: "0 0 100 100",
+    style: {
+      position: 'absolute',
+      inset: 0,
+      width: '100%',
+      height: '100%',
+      overflow: 'visible',
+      filter: `drop-shadow(0 0 ${Math.round(size * 0.028)}px rgba(168,127,255,.55))`
+    }
+  }, /*#__PURE__*/React.createElement("defs", null, /*#__PURE__*/React.createElement("linearGradient", {
+    id: `arc${uid}`,
+    x1: "2%",
+    y1: "62%",
+    x2: "98%",
+    y2: "38%"
+  }, /*#__PURE__*/React.createElement("stop", {
+    offset: "0%",
+    stopColor: "var(--iris-arc-from)"
+  }), /*#__PURE__*/React.createElement("stop", {
+    offset: "46%",
+    stopColor: "var(--iris-blush)"
+  }), /*#__PURE__*/React.createElement("stop", {
+    offset: "100%",
+    stopColor: "var(--iris-arc-to)"
+  }))), /*#__PURE__*/React.createElement("circle", {
+    cx: "50",
+    cy: "50",
+    r: R,
+    fill: "none",
+    stroke: `url(#arc${uid})`,
+    strokeWidth: "1.5",
+    strokeLinecap: "round",
+    strokeDasharray: `${dash.toFixed(2)} ${(CIRC - dash).toFixed(2)}`,
+    transform: "rotate(-108 50 50)",
+    style: {
+      transition: 'stroke-dasharray var(--dur-slow) var(--ease-exhale)'
+    }
+  }))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: 'absolute',
+      inset: 0,
+      borderRadius: '50%',
+      pointerEvents: 'none',
+      border: '1px solid var(--line-soft)',
+      opacity: 0.7
+    }
+  }), /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: 'absolute',
+      inset: '7%',
+      animation: breath ? 'mm-glass-breathe var(--dur-breath) linear infinite' : 'none',
+      willChange: 'transform'
+    }
+  }, /*#__PURE__*/React.createElement("svg", {
+    viewBox: "0 0 100 100",
+    style: {
+      position: 'absolute',
+      inset: 0,
+      width: '100%',
+      height: '100%',
+      overflow: 'visible',
+      opacity: done ? 0.6 : listening ? 0.68 + l * 0.32 : thinking ? 0.55 : 0.6,
       transition: 'opacity var(--dur-normal) var(--ease-exhale)',
-      animation: thinking ? 'mm-drift 2600ms linear infinite' : 'none'
+      mixBlendMode: 'var(--iris-lattice-blend)',
+      filter: `drop-shadow(0 0 ${Math.round(size * 0.012)}px rgba(190,164,255,.6))`
+    }
+  }, /*#__PURE__*/React.createElement("g", {
+    style: {
+      transformOrigin: '50px 50px',
+      animation: 'mm-drift 74s linear infinite'
+    }
+  }, LATTICE.map((c, i) => /*#__PURE__*/React.createElement("circle", {
+    key: i,
+    cx: c.cx,
+    cy: c.cy,
+    r: "27",
+    fill: "none",
+    stroke: i % 2 ? 'var(--iris-blush)' : 'var(--iris-sky)',
+    strokeWidth: "0.3",
+    opacity: "0.75"
+  }))), /*#__PURE__*/React.createElement("g", {
+    style: {
+      transformOrigin: '50px 50px',
+      animation: 'mm-drift-back 96s linear infinite'
+    }
+  }, LATTICE.filter((_, i) => i % 2 === 0).map((c, i) => /*#__PURE__*/React.createElement("circle", {
+    key: i,
+    cx: c.cx,
+    cy: c.cy,
+    r: "30",
+    fill: "none",
+    stroke: "var(--iris-violet)",
+    strokeWidth: "0.26",
+    opacity: "0.6"
+  })))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: 'absolute',
+      inset: '17%',
+      borderRadius: '50%',
+      overflow: 'hidden',
+      transform: `scale(${done ? 1.1 : thinking ? 0.9 : listening ? 1 + l * 0.07 : 1})`,
+      transition: 'transform var(--dur-slow) var(--ease-settle)',
+      filter: 'saturate(var(--iris-sat)) contrast(1.04)',
+      boxShadow: 'inset 0 0 0 1px rgba(255,255,255,.35), 0 0 26px -6px rgba(190,164,255,.5)'
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: 'absolute',
+      inset: 0,
+      background: 'conic-gradient(from 0deg, var(--iris-blush), var(--iris-peach), var(--iris-mint), var(--iris-sky), var(--iris-violet), var(--iris-blush))',
+      filter: `blur(${Math.round(size * 0.045)}px)`,
+      animation: 'mm-swirl 26s linear infinite',
+      willChange: 'transform'
     }
   }), /*#__PURE__*/React.createElement("div", {
     style: {
       position: 'absolute',
-      inset: '38%',
-      borderRadius: '50%',
-      background: 'var(--accent)',
-      opacity: done ? 1 : listening ? 0.5 + l * 0.4 : thinking ? 0.4 : 0.26,
-      transform: `scale(${done ? 1.14 : listening ? 1 + l * 0.06 : 1})`,
-      boxShadow: listening ? 'var(--shadow-listening)' : 'none',
-      transition: 'opacity var(--dur-slow) var(--ease-exhale), transform var(--dur-slow) var(--ease-settle), box-shadow var(--dur-slow) var(--ease-exhale)'
+      inset: 0,
+      mixBlendMode: 'var(--iris-blend)',
+      opacity: 0.85,
+      background: 'conic-gradient(from 140deg, transparent, var(--iris-mint) 22%, transparent 42%, var(--iris-blush) 66%, transparent 86%)',
+      filter: `blur(${Math.round(size * 0.055)}px)`,
+      animation: 'mm-swirl-back 37s linear infinite',
+      willChange: 'transform'
     }
-  }), /*#__PURE__*/React.createElement("span", {
+  }), /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: 'absolute',
+      inset: '-10%',
+      mixBlendMode: 'var(--iris-blend)',
+      opacity: 0.7,
+      background: 'radial-gradient(circle at 38% 34%, rgba(255,255,255,.6) 0%, transparent 30%), radial-gradient(circle at 68% 72%, var(--iris-violet) 0%, transparent 46%)',
+      filter: `blur(${Math.round(size * 0.03)}px)`,
+      animation: 'mm-wobble 19s ease-in-out infinite',
+      willChange: 'transform'
+    }
+  }), /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: 'absolute',
+      inset: 0,
+      borderRadius: '50%',
+      pointerEvents: 'none',
+      background: 'radial-gradient(circle at 34% 28%, rgba(255,255,255,.42) 0%, transparent 28%), radial-gradient(circle at 72% 78%, var(--iris-shade) 0%, transparent 52%)'
+    }
+  }), /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: 'absolute',
+      left: '18%',
+      top: '14%',
+      width: '34%',
+      height: '22%',
+      borderRadius: '50%',
+      pointerEvents: 'none',
+      background: 'radial-gradient(ellipse at 50% 50%, rgba(255,255,255,.92) 0%, transparent 70%)',
+      filter: `blur(${Math.round(size * 0.02)}px)`,
+      animation: 'mm-gloss 13s ease-in-out infinite'
+    }
+  })), /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: 'absolute',
+      inset: 0,
+      borderRadius: '50%',
+      pointerEvents: 'none',
+      background: 'var(--bg-base)',
+      opacity: done ? 0 : listening ? `calc(var(--iris-veil) * ${(1 - l).toFixed(2)})` : thinking ? 'calc(var(--iris-veil) * 1.25)' : 'var(--iris-veil)',
+      transition: 'opacity var(--dur-slow) var(--ease-exhale)'
+    }
+  })), /*#__PURE__*/React.createElement("span", {
     style: {
       position: 'absolute',
       inset: 0,
       display: 'grid',
       placeItems: 'center',
-      color: 'var(--accent-on)',
+      color: 'var(--accent-on-lit)',
       opacity: done ? 1 : 0,
       transition: 'opacity var(--dur-normal) var(--ease-exhale) 120ms'
     }
@@ -1302,14 +1510,13 @@ function CaptureScreen({
     name: "list",
     label: "History",
     onClick: onHistory
-  }), /*#__PURE__*/React.createElement(Wordmark, {
-    size: 19,
-    dot: false,
+  }), /*#__PURE__*/React.createElement("span", {
     style: {
-      color: 'var(--text-tertiary)',
-      letterSpacing: '.16em'
+      font: 'var(--weight-medium) 16px/1 var(--font-core)',
+      color: 'var(--text-secondary)',
+      letterSpacing: '.14em'
     }
-  }), /*#__PURE__*/React.createElement(IconButton, {
+  }, "Murmur"), /*#__PURE__*/React.createElement(IconButton, {
     name: "settings",
     label: "Settings",
     onClick: onSettings
@@ -2314,6 +2521,8 @@ Object.assign(window, {
 })(); } catch (e) { __ds_ns.__errors.push({ path: "ui_kits/murmur-ios/Phone.jsx", error: String((e && e.message) || e) }); }
 
 __ds_ns.AppIcon = __ds_scope.AppIcon;
+
+__ds_ns.AppIconM = __ds_scope.AppIconM;
 
 __ds_ns.Wordmark = __ds_scope.Wordmark;
 

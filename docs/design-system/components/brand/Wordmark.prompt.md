@@ -1,4 +1,4 @@
-The Murmur wordmark. Always lowercase, always tracked at `--ls-wordmark` (0.13em).
+The Murmur wordmark: the single letter **M**, set in the core face with the ember dot beside it. Tracked at `--ls-wordmark` (0.13em).
 
 ```jsx
 <Wordmark size={30} />

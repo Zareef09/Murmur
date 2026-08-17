@@ -47,7 +47,25 @@ enum MurmurColor {
     static let clay400 = Color(hex: 0xE0907C)
     static let clay600 = Color(hex: 0xA8503F)
 
-    // MARK: Bloom (breathing well) — blended hues, decorative only, never text or chips
+    // MARK: Iridescence — the glass bead in the well. Decorative only, never text or chips.
+    static let irisBlush = Color(hex: 0xFF9EC6)
+    static let irisPeach = Color(hex: 0xFFC078)
+    static let irisMint = Color(hex: 0x7FE9D2)
+    static let irisSky = Color(hex: 0x93B9FF)
+    static let irisViolet = Color(hex: 0xA87FFF)
+    static let irisArcFrom = ember400
+    static let irisArcTo = Color(hex: 0xA98BFF)
+    static let irisShade = Color(light: Color(hex: 0x483460, alpha: 0.20), dark: Color(hex: 0x120C1A, alpha: 0.50))
+    static let accentOnLit = Color(light: Color(hex: 0x52240A), dark: Color(hex: 0x2A1503))
+
+    /// How far the glass dims at rest.
+    static let irisVeilLight: Double = 0.10
+    static let irisVeilDark: Double = 0.24
+
+    /// The film's conic ramp, closed on itself.
+    static let irisFilm: [Color] = [irisBlush, irisPeach, irisMint, irisSky, irisViolet, irisBlush]
+
+    // MARK: Bloom (kept for the lattice strokes)
     static let bloomEmber = Color(hex: 0xF2A24C)
     static let bloomRose = Color(hex: 0xEC8F7E)
     static let bloomLilac = Color(hex: 0xB98CC4)

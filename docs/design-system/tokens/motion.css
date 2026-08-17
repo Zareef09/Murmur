@@ -10,12 +10,12 @@
   --dur-quick:   220ms; /* @kind other */   /* control state changes */
   --dur-normal:  380ms; /* @kind other */   /* cross-fades, sheet presentation */
   --dur-slow:    620ms; /* @kind other */   /* state morphs: listening → thinking */
-  --dur-breath: 3800ms; /* @kind other */   /* idle breathing loop */
+  --dur-breath: 5200ms; /* @kind other */   /* idle breathing loop: short inhale, held top, long exhale */
 
   --undo-window: 5000ms; /* @kind other */  /* how long the Undo affordance stays */
 }
 @media (prefers-reduced-motion: reduce) {
   :root {
-    --dur-quick: 1ms; /* @kind other */ --dur-normal: 1ms; /* @kind other */ --dur-slow: 1ms; /* @kind other */ --dur-breath: 1ms; /* @kind other */
+    --dur-quick: 1ms; /* @kind other */ --dur-normal: 1ms; /* @kind other */ --dur-slow: 1ms; /* @kind other */ --dur-breath: 0s; /* @kind other */
   }
 }

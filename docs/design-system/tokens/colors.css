@@ -20,15 +20,17 @@
   --sand-950: #17140F;
   --sand-1000:#100E0B;
 
-  /* Base ramp — Ember (the single accent: a warm light source) */
-  --ember-100: #FBEEDF;
-  --ember-200: #F6D9B8;
-  --ember-300: #EFBE8B;
-  --ember-400: #E5A063;
-  --ember-500: #D2803A;
-  --ember-600: #B4602A;
-  --ember-700: #98481D;
-  --ember-800: #77361A;
+  /* Base ramp — Ember (the single accent: a warm light source).
+     Higher chroma than a plain brown-orange — the light should look lit. The
+     600–800 steps stay dark enough to carry white text at AA. */
+  --ember-100: #FFF2E2;
+  --ember-200: #FFDDB4;
+  --ember-300: #FFC486;
+  --ember-400: #FFA455;
+  --ember-500: #F8862F;
+  --ember-600: #BC5C12;
+  --ember-700: #96460F;
+  --ember-800: #75350E;
 
   /* Base ramps — destination hues (warm-leaning, harmonious with Ember) */
   --moss-300:  #BFC79A;   /* Reminder */
@@ -64,12 +66,34 @@
   --line-strong:   rgba(33, 29, 24, .22);
 
   --accent:            var(--ember-600);
-  --accent-hover:      var(--ember-700);
-  --accent-press:      var(--ember-800);
+  --accent-hover:      var(--ember-500);   /* brightens on approach, never darkens */
+  --accent-press:      var(--ember-700);
   --accent-quiet:      var(--ember-100);
   --accent-on:         var(--sand-0);
-  --accent-glow:       rgba(210, 128, 58, .34);
-  --accent-glow-faint: rgba(210, 128, 58, .12);
+  --accent-glow:       rgba(248, 134, 47, .38);
+  --accent-glow-faint: rgba(248, 134, 47, .14);
+  /* Light bodies inside the capture well: always the bright end of the ramp, so
+     light ADDS luminance in both themes. */
+  --accent-lit-1:      #FFC98F;
+  --accent-lit-2:      var(--ember-400);
+  --accent-lit-3:      var(--ember-500);
+  --accent-on-lit:     #52240A;
+  --well-floor:        rgba(255, 242, 226, .55);
+
+  /* Iridescence — reserved for the capture well's glass only. Never for UI
+     chrome, text, or destinations: those stay on Ember, Moss and Plum. */
+  --iris-blush:  #FF9EC6;
+  --iris-peach:  #FFC078;
+  --iris-mint:   #7FE9D2;
+  --iris-sky:    #93B9FF;
+  --iris-violet: #A87FFF;
+  --iris-arc-from: var(--ember-400);
+  --iris-arc-to:   #A98BFF;
+  --iris-blend:         normal; /* @kind other */                 /* film blending: additive only where the page is dark */
+  --iris-lattice-blend: multiply; /* @kind other */
+  --iris-shade:         rgba(72, 52, 96, .20);  /* the bead's terminator */
+  --iris-veil:          .10; /* @kind other */                    /* how far the glass dims at rest */
+  --iris-sat:           1.05; /* @kind other */
 
   --reminder-fg:    var(--moss-700);
   --reminder-bg:    #EDEFE0;
@@ -106,14 +130,23 @@
   --line-soft:     rgba(242, 235, 223, .13);
   --line-strong:   rgba(242, 235, 223, .26);
 
-  --accent:            var(--ember-400);
-  --accent-hover:      var(--ember-300);
-  --accent-press:      var(--ember-500);
-  --accent-quiet:      rgba(229, 160, 99, .14);
-  --accent-on:         #241608;
-  --accent-glow:       rgba(239, 190, 139, .40);
-  --accent-glow-faint: rgba(239, 190, 139, .13);
-
+  --accent:            var(--ember-300);
+  --accent-hover:      var(--ember-200);
+  --accent-press:      var(--ember-400);
+  --accent-quiet:      rgba(255, 221, 180, .22);
+  --accent-on:         #2A1503;
+  --accent-glow:       rgba(255, 175, 96, .46);
+  --accent-glow-faint: rgba(255, 196, 134, .16);
+  --accent-lit-1:      #FFE7C8;
+  --accent-lit-2:      var(--ember-300);
+  --accent-lit-3:      var(--ember-400);
+  --accent-on-lit:     #2A1503;
+  --well-floor:        rgba(255, 196, 134, .05);
+  --iris-blend:         screen; /* @kind other */
+  --iris-lattice-blend: screen; /* @kind other */
+  --iris-shade:         rgba(18, 12, 26, .5);
+  --iris-veil:          .24; /* @kind other */
+  --iris-sat:           1.7; /* @kind other */
   --reminder-fg:   var(--moss-300);
   --reminder-bg:   rgba(155, 167, 120, .15);
   --reminder-line: rgba(191, 199, 154, .30);

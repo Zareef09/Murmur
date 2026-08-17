@@ -51,6 +51,14 @@
         "message": "<AppIcon> theme must be one of 'light' | 'dark'."
       },
       {
+        "selector": "JSXOpeningElement[name.name='AppIconM'] > JSXAttribute > JSXIdentifier[name!=/^(?:size|theme|style|key|ref|className|style|children)$/]",
+        "message": "<AppIconM> doesn't accept that prop. Declared props: size, theme, style."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='AppIconM'] > JSXAttribute[name.name='theme'] > Literal[value!=/^(?:light|dark)$/]",
+        "message": "<AppIconM> theme must be one of 'light' | 'dark'."
+      },
+      {
         "selector": "JSXOpeningElement[name.name='Button'] > JSXAttribute > JSXIdentifier[name!=/^(?:variant|size|icon|iconAfter|fullWidth|disabled|onClick|children|style|key|ref|className|style|children)$/]",
         "message": "<Button> doesn't accept that prop. Declared props: variant, size, icon, iconAfter, fullWidth, disabled, onClick, children, style."
       },
@@ -175,6 +183,9 @@
       "AppIcon": {
         "replaces": []
       },
+      "AppIconM": {
+        "replaces": []
+      },
       "Button": {
         "replaces": []
       },
@@ -223,7 +234,11 @@
       "--accent-glow",
       "--accent-glow-faint",
       "--accent-hover",
+      "--accent-lit-1",
+      "--accent-lit-2",
+      "--accent-lit-3",
       "--accent-on",
+      "--accent-on-lit",
       "--accent-press",
       "--accent-quiet",
       "--attention-bg",
@@ -264,6 +279,18 @@
       "--hit-comfort",
       "--hit-hero",
       "--hit-min",
+      "--iris-arc-from",
+      "--iris-arc-to",
+      "--iris-blend",
+      "--iris-blush",
+      "--iris-lattice-blend",
+      "--iris-mint",
+      "--iris-peach",
+      "--iris-sat",
+      "--iris-shade",
+      "--iris-sky",
+      "--iris-veil",
+      "--iris-violet",
       "--leaf-400",
       "--leaf-600",
       "--lh-body",
@@ -375,7 +402,8 @@
       "--weight-light",
       "--weight-medium",
       "--weight-regular",
-      "--weight-semibold"
+      "--weight-semibold",
+      "--well-floor"
     ],
     "tokenKinds": {
       "--font-core": "font",
@@ -434,6 +462,23 @@
       "--accent-on": "color",
       "--accent-glow": "color",
       "--accent-glow-faint": "color",
+      "--accent-lit-1": "color",
+      "--accent-lit-2": "color",
+      "--accent-lit-3": "color",
+      "--accent-on-lit": "color",
+      "--well-floor": "color",
+      "--iris-blush": "color",
+      "--iris-peach": "color",
+      "--iris-mint": "color",
+      "--iris-sky": "color",
+      "--iris-violet": "color",
+      "--iris-arc-from": "color",
+      "--iris-arc-to": "color",
+      "--iris-blend": "other",
+      "--iris-lattice-blend": "other",
+      "--iris-shade": "color",
+      "--iris-veil": "other",
+      "--iris-sat": "other",
       "--reminder-fg": "color",
       "--reminder-bg": "color",
       "--reminder-line": "color",

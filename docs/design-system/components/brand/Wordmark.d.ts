@@ -1,5 +1,5 @@
 /**
- * @startingPoint section="Brand" subtitle="Wordmark and app icon" viewport="700x200"
+ * @startingPoint section="Brand" subtitle="Wordmark — the letter M" viewport="700x200"
  */
 export interface WordmarkProps {
   /** Cap height in px. 28 is the standard lockup; never below 18. */

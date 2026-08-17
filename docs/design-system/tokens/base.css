@@ -17,16 +17,119 @@ button { font: inherit; letter-spacing: inherit; }
    The one permitted gradient in the system. */
 .mm-light-wash {
   background:
-    radial-gradient(120% 68% at 50% 12%, var(--accent-glow-faint) 0%, transparent 62%),
+    radial-gradient(120% 62% at 50% 34%, var(--accent-glow-faint) 0%, transparent 66%),
     var(--bg-base);
 }
+:root[data-theme="dark"] .mm-light-wash {
+  background:
+    radial-gradient(90% 56% at 50% 34%, var(--accent-glow) 0%, transparent 68%),
+    var(--bg-base);
+}
+/* ── The breath ───────────────────────────────────────────────────────────────
+   One cadence, asymmetric like a real breath: ~38% inhale, a held top, a long
+   exhale. Layers share the cadence at different amplitudes and phase offsets so
+   the orb reads as a lit volume with depth, not as one element scaling. */
 @keyframes mm-breathe {
-  0%, 100% { transform: scale(1); opacity: .82; }
-  50%      { transform: scale(1.045); opacity: 1; }
+  0%   { transform: scale(1);     opacity: .74; animation-timing-function: cubic-bezier(.34,.06,.25,1); }
+  38%  { transform: scale(1.075); opacity: 1; }
+  50%  { transform: scale(1.07);  opacity: .98; animation-timing-function: cubic-bezier(.32,.14,.2,1); }
+  100% { transform: scale(1);     opacity: .74; }
+}
+@keyframes mm-breathe-halo {
+  0%   { transform: scale(.94); opacity: .72; animation-timing-function: cubic-bezier(.34,.06,.25,1); }
+  38%  { transform: scale(1.1); opacity: 1; }
+  52%  { transform: scale(1.08); opacity: .96; animation-timing-function: cubic-bezier(.32,.14,.2,1); }
+  100% { transform: scale(.94); opacity: .72; }
+}
+@keyframes mm-breathe-ring {
+  0%   { transform: scale(.99);  animation-timing-function: cubic-bezier(.34,.06,.25,1); }
+  38%  { transform: scale(1.045); }
+  50%  { transform: scale(1.04); animation-timing-function: cubic-bezier(.32,.14,.2,1); }
+  100% { transform: scale(.99); }
+}
+@keyframes mm-breathe-core {
+  0%   { transform: scale(.97); opacity: .82; animation-timing-function: cubic-bezier(.34,.06,.25,1); }
+  38%  { transform: scale(1.05); opacity: 1; }
+  50%  { transform: scale(1.045); opacity: .99; animation-timing-function: cubic-bezier(.32,.14,.2,1); }
+  100% { transform: scale(.97); opacity: .82; }
+}
+/* the orb rises as it fills */
+@keyframes mm-float {
+  0%   { transform: translate3d(0, 2px, 0); animation-timing-function: cubic-bezier(.34,.06,.25,1); }
+  38%  { transform: translate3d(0, -4px, 0); }
+  50%  { transform: translate3d(0, -3.4px, 0); animation-timing-function: cubic-bezier(.32,.14,.2,1); }
+  100% { transform: translate3d(0, 2px, 0); }
+}
+/* a hairline leaving on the exhale */
+@keyframes mm-echo {
+  0%   { transform: scale(.9);  opacity: 0; }
+  16%  { opacity: .34; }
+  100% { transform: scale(1.62); opacity: 0; }
+}
+@keyframes mm-glint {
+  0%, 100% { opacity: .38; }
+  40%      { opacity: 1; }
 }
 @keyframes mm-drift {
   0%   { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
+}
+@keyframes mm-drift-back {
+  0%   { transform: rotate(0deg); }
+  100% { transform: rotate(-360deg); }
+}
+
+/* ── Liquid light ───────────────────────────────────────────────────────────
+   Soft bodies of light that orbit and change shape at different rates. Nothing
+   here scales in unison, so the well never reads as a pulsing circle. */
+@keyframes mm-orbit-a {
+  0%   { transform: translate3d(-8%, 6%, 0) rotate(0deg); }
+  100% { transform: translate3d(-8%, 6%, 0) rotate(360deg); }
+}
+@keyframes mm-orbit-b {
+  0%   { transform: translate3d(9%, -7%, 0) rotate(360deg); }
+  100% { transform: translate3d(9%, -7%, 0) rotate(0deg); }
+}
+@keyframes mm-morph {
+  0%   { border-radius: 58% 42% 47% 53% / 46% 55% 45% 54%; }
+  33%  { border-radius: 44% 56% 62% 38% / 57% 41% 59% 43%; }
+  66%  { border-radius: 51% 49% 38% 62% / 40% 60% 40% 60%; }
+  100% { border-radius: 58% 42% 47% 53% / 46% 55% 45% 54%; }
+}
+/* the aperture itself: a held, asymmetric swell */
+@keyframes mm-iris {
+  0%   { transform: scale(.985); animation-timing-function: cubic-bezier(.34,.06,.25,1); }
+  38%  { transform: scale(1.032); }
+  52%  { transform: scale(1.028); animation-timing-function: cubic-bezier(.32,.14,.2,1); }
+  100% { transform: scale(.985); }
+}
+@keyframes mm-veil {
+  0%   { opacity: .55; animation-timing-function: cubic-bezier(.34,.06,.25,1); }
+  38%  { opacity: 1; }
+  100% { opacity: .55; }
+}
+
+/* ── The glass well ───────────────────────────────────────────────────────────
+   Iridescence comes from wide gradients turning at incommensurable rates — never
+   from a hue-rotate, which reads as a colour cycle instead of light on a film. */
+@keyframes mm-swirl      { 0% { transform: rotate(0deg)   scale(1.18); } 100% { transform: rotate(360deg)  scale(1.18); } }
+@keyframes mm-swirl-back { 0% { transform: rotate(0deg)   scale(1.24); } 100% { transform: rotate(-360deg) scale(1.24); } }
+@keyframes mm-wobble {
+  0%   { transform: translate3d(-3%, 2%, 0) scale(1.06); }
+  33%  { transform: translate3d(3%, -3%, 0) scale(1.12); }
+  66%  { transform: translate3d(2%, 3%, 0)  scale(1.02); }
+  100% { transform: translate3d(-3%, 2%, 0) scale(1.06); }
+}
+@keyframes mm-gloss {
+  0%, 100% { opacity: .5; transform: translate3d(0, 0, 0) rotate(0deg); }
+  50%      { opacity: .85; transform: translate3d(2%, -2%, 0) rotate(8deg); }
+}
+/* the glass body swells on the breath, the lattice lags behind it */
+@keyframes mm-glass-breathe {
+  0%   { transform: scale(.975); animation-timing-function: cubic-bezier(.34,.06,.25,1); }
+  38%  { transform: scale(1.035); }
+  52%  { transform: scale(1.03); animation-timing-function: cubic-bezier(.32,.14,.2,1); }
+  100% { transform: scale(.975); }
 }
 @keyframes mm-rise {
   from { opacity: 0; transform: translateY(8px); }

@@ -1,4 +1,4 @@
-<!-- @dsCard group="Components" viewport="700x260" name="Wordmark & app icon" subtitle="Lockups and the icon on both grounds" -->
+<!-- @dsCard group="Components" viewport="700x340" name="Wordmark & app logo" subtitle="The letter M — lockups, logo, and the icon on both grounds" -->
 <!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><link rel="stylesheet" href="../../styles.css">
 <script>window.MURMUR_ICON_BASE='../../assets/icons'</script>
 <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
@@ -8,20 +8,31 @@
 <style>body{margin:0;padding:20px 22px;background:var(--bg-base);color:var(--text-primary);font:var(--type-body)}.lbl{font:var(--type-meta);font-size:10px;color:var(--text-tertiary);margin-bottom:8px}.row{display:flex;gap:14px;align-items:center;flex-wrap:wrap}</style></head><body><div id="root"></div><script type="text/babel">
 const NS = window.MurmurDesignSystem_545ca7;
 
-const { Wordmark, AppIcon } = NS;
+const { Wordmark, AppIcon, AppIconM } = NS;
 function Card() {
   return (
-    <div style={{display:'flex',flexDirection:'column',gap:20}}>
-      <div className="row" style={{gap:34}}>
-        <Wordmark size={34} />
-        <Wordmark size={22} tone="accent" />
-        <div style={{display:'flex',alignItems:'center',gap:14,background:'var(--sand-1000)',padding:'14px 22px',borderRadius:'var(--radius-lg)'}}>
-          <span style={{color:'#F2EBDF',display:'flex'}}><Wordmark size={22} tone="inverse" /></span>
+    <div style={{display:'flex',flexDirection:'column',gap:24}}>
+      <div>
+        <div className="lbl">App logo — the letter M</div>
+        <div className="row" style={{gap:22,alignItems:'flex-end'}}>
+          {[120,84,60,40].map(s => <div key={s} style={{display:'flex',flexDirection:'column',alignItems:'center',gap:8}}><AppIconM size={s} /><span className="lbl" style={{margin:0}}>{s}px</span></div>)}
         </div>
       </div>
-      <div className="row" style={{gap:22,alignItems:'flex-end'}}>
-        {[120,84,60,40].map(s => <div key={s} style={{display:'flex',flexDirection:'column',alignItems:'center',gap:8}}><AppIcon size={s} /><span className="lbl" style={{margin:0}}>{s}px</span></div>)}
-        {[120,60].map(s => <div key={'d'+s} style={{display:'flex',flexDirection:'column',alignItems:'center',gap:8}}><AppIcon size={s} theme="dark" /><span className="lbl" style={{margin:0}}>{s}px dark</span></div>)}
+      <div>
+        <div className="lbl">Wordmark</div>
+        <div className="row" style={{gap:34}}>
+          <Wordmark size={34} />
+          <Wordmark size={22} tone="accent" />
+          <div style={{display:'flex',alignItems:'center',gap:14,background:'var(--sand-1000)',padding:'14px 22px',borderRadius:'var(--radius-lg)'}}>
+            <span style={{color:'#F2EBDF',display:'flex'}}><Wordmark size={22} tone="inverse" /></span>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div className="lbl">Previous icon (Light Well — kept for the capture screen)</div>
+        <div className="row" style={{gap:22,alignItems:'flex-end'}}>
+          {[60,40].map(s => <div key={s} style={{display:'flex',flexDirection:'column',alignItems:'center',gap:8}}><AppIcon size={s} /><span className="lbl" style={{margin:0}}>{s}px</span></div>)}
+        </div>
       </div>
     </div>
   );

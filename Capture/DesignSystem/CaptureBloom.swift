@@ -1,8 +1,14 @@
 import SwiftUI
 
-/// The well breathes continuously and blends its colours as it turns. Listening deepens the same
-/// breath rather than switching to a different animation, so the loop never snaps between states.
-/// `level` is 0…1 and is smoothed inside (≈120ms attack, ≈400ms release).
+/// Murmur's signature interaction: a bead of iridescent glass held inside a guilloché lattice,
+/// ringed by a progress arc. Ported from `docs/design-system/components/capture/CaptureBloom.jsx`.
+///
+/// Three parts, each doing one job:
+///   - **glass** wide iridescent gradients turning at incommensurable rates behind a spherical
+///     shade, so the surface reads as light on a film
+///   - **lattice** a procedural rosette (28 circles on an offset orbit) counter-turning in two
+///     layers — the listening field, brightening with voice
+///   - **arc** a single ember→violet sweep on the rim: the only progress signal
 struct CaptureBloom: View {
     enum BloomState {
         case idle
@@ -12,8 +18,9 @@ struct CaptureBloom: View {
     }
 
     var state: BloomState = .idle
+    /// Normalised amplitude. Smoothed inside (≈120ms attack, ≈400ms release).
     var level: CGFloat = 0
-    var size: CGFloat = 240
+    var size: CGFloat = 244
     var label: String?
     var isInteractive: Bool = true
     var onTap: () -> Void = {}
@@ -71,6 +78,16 @@ struct CaptureBloom: View {
         Self.hitSize(visual: size, interactive: isInteractive)
     }
 
+    // MARK: Geometry
+    //
+    // Every layer carries an explicit frame. Gradients and shapes are flexible views: left to
+    // themselves they fill whatever the stack offers, which is not the same as the kit's `inset`.
+
+    /// Kit: glass body sits at inset 7% of the button.
+    private var glassSize: CGFloat { size * 0.86 }
+    /// Kit: the bead sits at inset 17% of the glass body.
+    private var beadSize: CGFloat { glassSize * 0.66 }
+
     // MARK: Composition
 
     private func well(at date: Date) -> some View {
@@ -79,30 +96,17 @@ struct CaptureBloom: View {
             now: date,
             reduceMotion: reduceMotion
         )
-        let breath = breathWave(at: date)
-        let spin = spin(at: date)
-        let swell = swell(breath: breath, amp: amp)
+        let t = reduceMotion ? 0 : date.timeIntervalSinceReferenceDate
 
-        // No drawingGroup and no plusLighter here on purpose: both composite a rectangular buffer,
-        // which shows up as a hard box behind the glow.
         return ZStack {
-            haze(spin: spin, swell: swell, amp: amp)
-            halo(spin: spin, swell: swell, amp: amp)
-            core(spin: spin, swell: swell, amp: amp)
+            spill(amp: amp, t: t)
+            track
+            arc(amp: amp, t: t)
+            glass(amp: amp, t: t)
             checkmark
         }
         .frame(width: size, height: size)
         .animation(stateMorph, value: state)
-    }
-
-    /// Every layer fades to clear at its own edge, so the well has no boundary anywhere.
-    private var softEdge: RadialGradient {
-        RadialGradient(
-            colors: [.white, .white.opacity(0.45), .clear],
-            center: .center,
-            startRadius: 0,
-            endRadius: size * 0.58
-        )
     }
 
     private var stateMorph: Animation {
@@ -111,49 +115,181 @@ struct CaptureBloom: View {
             : MurmurMotion.animation(.exhale, .slow, reduceMotion: reduceMotion)
     }
 
-    /// Wide soft cloud. Carries the colour, masked to nothing at its rim so it never reads as a disc.
-    private func haze(spin: Double, swell: CGFloat, amp: CGFloat) -> some View {
+    /// Ambient spill: warm on one side, violet on the other, like the rim light.
+    private func spill(amp: CGFloat, t: TimeInterval) -> some View {
+        ZStack {
+            RadialGradient(
+                colors: [MurmurColor.accentGlow, .clear],
+                center: UnitPoint(x: 0.32, y: 0.62),
+                startRadius: 0,
+                endRadius: size * 0.52
+            )
+            RadialGradient(
+                colors: [MurmurColor.irisViolet.opacity(0.30), .clear],
+                center: UnitPoint(x: 0.68, y: 0.34),
+                startRadius: 0,
+                endRadius: size * 0.54
+            )
+        }
+        .frame(width: size * 1.68, height: size * 1.68)
+        .blur(radius: size * 0.09)
+        .scaleEffect(spillScale(amp))
+        .opacity(spillOpacity(amp))
+        .allowsHitTesting(false)
+    }
+
+    /// Faint full track behind the arc, so the ring always closes visually.
+    private var track: some View {
         Circle()
-            .fill(blend(spin: spin))
-            .frame(width: size * 1.12, height: size * 1.12)
-            .mask(softEdge)
-            .blur(radius: size * 0.03)
-            .scaleEffect(swell)
-            .opacity(lit(hazeOpacity(amp)))
+            .strokeBorder(MurmurColor.lineSoft, lineWidth: 1)
+            .frame(width: size, height: size)
+            .opacity(0.7)
             .allowsHitTesting(false)
     }
 
-    /// The readable edge of the well. Breathes slightly behind the haze so the motion reads as depth.
-    private func halo(spin: Double, swell: CGFloat, amp: CGFloat) -> some View {
-        Circle()
-            .strokeBorder(blend(spin: -spin * 0.6), lineWidth: size * 0.022)
-            .frame(width: size * 0.80, height: size * 0.80)
-            .scaleEffect(swell * 0.99)
-            .opacity(lit(haloOpacity(amp)))
+    /// The rim arc — ember → violet, round caps, one clean sweep. The only progress signal.
+    private func arc(amp: CGFloat, t: TimeInterval) -> some View {
+        let sweep = sweepFraction(amp)
+        return Circle()
+            .trim(from: 0, to: sweep)
+            .stroke(
+                // Kit: a linear ramp across the box, 2%/62% → 98%/38%. Not an angular sweep.
+                LinearGradient(
+                    stops: [
+                        .init(color: MurmurColor.irisArcFrom, location: 0),
+                        .init(color: MurmurColor.irisBlush, location: 0.46),
+                        .init(color: MurmurColor.irisArcTo, location: 1)
+                    ],
+                    startPoint: UnitPoint(x: 0.02, y: 0.62),
+                    endPoint: UnitPoint(x: 0.98, y: 0.38)
+                ),
+                style: StrokeStyle(lineWidth: size * 0.015, lineCap: .round)
+            )
+            .frame(width: size * 0.968, height: size * 0.968)
+            .rotationEffect(.degrees(-108 + driftDegrees(t)))
+            .shadow(color: MurmurColor.irisViolet.opacity(0.55), radius: size * 0.028)
             .allowsHitTesting(false)
     }
 
-    /// Bright centre. Keeps a warm heart so the blend never reads as a cold grey.
-    private func core(spin: Double, swell: CGFloat, amp: CGFloat) -> some View {
-        Circle()
-            .fill(blend(spin: spin * 1.4))
-            .frame(width: size * 0.42, height: size * 0.42)
-            .mask(
+    /// The glass body and its lattice, breathing together.
+    private func glass(amp: CGFloat, t: TimeInterval) -> some View {
+        ZStack {
+            lattice(amp: amp, t: t)
+            bead(amp: amp, t: t)
+            veil(amp: amp)
+        }
+        .frame(width: glassSize, height: glassSize)
+        .scaleEffect(breathScale(t))
+        .allowsHitTesting(false)
+    }
+
+    /// Guilloché rosette: 28 circles on an offset orbit, two counter-turning layers.
+    private func lattice(amp: CGFloat, t: TimeInterval) -> some View {
+        ZStack {
+            LatticeShape(count: 28, orbit: 0.17, radius: 0.27)
+                .stroke(MurmurColor.irisBlush.opacity(0.75), lineWidth: max(0.5, size * 0.003))
+                .rotationEffect(.degrees(turn(t, period: 74)))
+            LatticeShape(count: 14, orbit: 0.17, radius: 0.30)
+                .stroke(MurmurColor.irisViolet.opacity(0.60), lineWidth: max(0.5, size * 0.0026))
+                .rotationEffect(.degrees(-turn(t, period: 96)))
+        }
+        .frame(width: glassSize, height: glassSize)
+        .opacity(latticeOpacity(amp))
+        .shadow(color: MurmurColor.irisViolet.opacity(0.6), radius: size * 0.012)
+    }
+
+    /// The bead: iridescent film inside a sphere, lit from the upper left.
+    private func bead(amp: CGFloat, t: TimeInterval) -> some View {
+        ZStack {
+            AngularGradient(colors: MurmurColor.irisFilm, center: .center, angle: .degrees(turn(t, period: 26)))
+                .blur(radius: beadSize * 0.07)
+                .scaleEffect(1.18)
+
+            // Kit blends this layer with `screen`, so it lifts the film rather than covering it.
+            // Plain alpha at 0.85 flattened the whole bead to one colour.
+            AngularGradient(
+                colors: [
+                    .clear, MurmurColor.irisMint, .clear,
+                    MurmurColor.irisBlush, .clear
+                ],
+                center: .center,
+                angle: .degrees(140 - turn(t, period: 37))
+            )
+            .blur(radius: beadSize * 0.09)
+            .scaleEffect(1.24)
+            .blendMode(.screen)
+            .opacity(0.85)
+
+            // Spherical shade: light from upper-left, terminator lower-right.
+            //
+            // Both radii are fractions of the *bead*, matching the kit's 28% and 52%. Scaling them
+            // off the button instead made the terminator far too tight — a dark blob sitting in the
+            // middle of the glass rather than a shaded side.
+            RadialGradient(
+                colors: [.white.opacity(0.42), .clear],
+                center: UnitPoint(x: 0.34, y: 0.28),
+                startRadius: 0,
+                endRadius: beadSize * 0.28
+            )
+            RadialGradient(
+                stops: [
+                    .init(color: MurmurColor.irisShade, location: 0),
+                    .init(color: MurmurColor.irisShade.opacity(0.35), location: 0.45),
+                    .init(color: .clear, location: 1)
+                ],
+                center: UnitPoint(x: 0.80, y: 0.84),
+                startRadius: 0,
+                endRadius: beadSize * 0.62
+            )
+
+            specular(t: t)
+        }
+        .frame(width: beadSize, height: beadSize)
+        // Contains the screen blend to the bead, so it cannot composite against the page.
+        .compositingGroup()
+        .clipShape(Circle())
+        .overlay {
+            Circle()
+                .strokeBorder(.white.opacity(0.35), lineWidth: 1)
+                .frame(width: beadSize, height: beadSize)
+        }
+        .saturation(1.05)
+        .scaleEffect(beadScale(amp) * coreDip)
+        .shadow(color: MurmurColor.irisViolet.opacity(0.5), radius: size * 0.10)
+    }
+
+    /// Kit: 34% × 22% of the bead, at 18%/14% from its top-left.
+    private func specular(t: TimeInterval) -> some View {
+        let wobble = sin(phase(t, period: 13) * 2 * .pi)
+        return Ellipse()
+            .fill(
                 RadialGradient(
-                    colors: [.white, .white, .white.opacity(0.9), .clear],
+                    colors: [.white.opacity(0.92), .clear],
                     center: .center,
                     startRadius: 0,
-                    endRadius: size * 0.21
+                    endRadius: beadSize * 0.20
                 )
             )
-            .scaleEffect(swell * coreDip)
-            .opacity(lit(coreOpacity(amp)))
-            .allowsHitTesting(false)
+            .frame(width: beadSize * 0.34, height: beadSize * 0.22)
+            .blur(radius: beadSize * 0.05)
+            .offset(
+                x: -beadSize * 0.15 + wobble * beadSize * 0.02,
+                y: -beadSize * 0.25 - wobble * beadSize * 0.02
+            )
+            .opacity(0.5 + 0.35 * (wobble + 1) / 2)
+    }
+
+    /// Dim veil when the glass is at rest, so idle stays quiet.
+    private func veil(amp: CGFloat) -> some View {
+        Circle()
+            .fill(MurmurColor.bgBase)
+            .frame(width: beadSize, height: beadSize)
+            .opacity(veilOpacity(amp))
     }
 
     private var checkmark: some View {
-        MurmurIcon(name: .check, size: (size * 0.15).rounded())
-            .foregroundStyle(MurmurColor.textInverse)
+        MurmurIcon(name: .check, size: (size * 0.13).rounded())
+            .foregroundStyle(MurmurColor.accentOnLit)
             .opacity(state == .done ? 1 : 0)
             .animation(
                 MurmurMotion.animation(.exhale, .normal, reduceMotion: reduceMotion).delay(
@@ -163,80 +299,92 @@ struct CaptureBloom: View {
             )
     }
 
-    /// Light canvases need the deeper hues; the pastels vanish against near-white.
-    private func blend(spin: Double) -> AngularGradient {
-        AngularGradient(
-            colors: colorScheme == .dark ? MurmurColor.bloomBlend : MurmurColor.bloomBlendDeep,
-            center: .center,
-            angle: .degrees(spin)
-        )
-    }
-
     // MARK: Motion
 
-    /// 0…1 continuous breath. Frozen mid-cycle under Reduce Motion so the well still reads as lit.
+    /// Degrees for a loop of `period` seconds, wrapped to one turn.
     ///
-    /// A raw cosine spends most of its time mid-stroke, which reads as a hum. Smoothstep pushes the
-    /// curve toward its ends, so the well holds full and holds empty and moves decisively between —
-    /// the shape of a breath rather than a wobble.
-    private func breathWave(at date: Date) -> CGFloat {
-        guard !reduceMotion, state != .done else { return 0.5 }
+    /// `t` is seconds since 2001, so a raw `t / period * 360` reaches ~1e10 degrees. At that
+    /// magnitude a gradient's per-pixel angle variation falls below float resolution and every
+    /// pixel samples the same stop — the film renders as one flat colour. Wrap first.
+    private func turn(_ t: TimeInterval, period: TimeInterval) -> Double {
+        guard period > 0 else { return 0 }
+        return t.truncatingRemainder(dividingBy: period) / period * 360
+    }
+
+    /// 0…1 position within a loop, for wobbles that need a phase rather than an angle.
+    private func phase(_ t: TimeInterval, period: TimeInterval) -> Double {
+        guard period > 0 else { return 0 }
+        return t.truncatingRemainder(dividingBy: period) / period
+    }
+
+    /// Short inhale, held top, long exhale — matches `mm-glass-breathe`.
+    private func breathScale(_ t: TimeInterval) -> CGFloat {
+        guard !reduceMotion, state == .idle || state == .listening else { return 1 }
         let period = MurmurMotion.seconds(.breath, reduceMotion: false)
-        let t = date.timeIntervalSinceReferenceDate
-        let raw = CGFloat((1 - cos(t * 2 * .pi / period)) / 2)
-        return raw * raw * (3 - 2 * raw)
+        let phase = (t.truncatingRemainder(dividingBy: period)) / period
+        let wave = (1 - cos(phase * 2 * .pi)) / 2
+        let eased = wave * wave * (3 - 2 * wave)
+        return 0.975 + CGFloat(eased) * 0.06
     }
 
-    /// Colour rotation. Thinking spins faster; everything else drifts.
-    private func spin(at date: Date) -> Double {
-        guard !reduceMotion else { return 0 }
-        let t = date.timeIntervalSinceReferenceDate
-        return state == .thinking ? t / 2.2 * 360 : t / 14 * 360
+    /// Thinking detaches the arc into a short travelling sweep.
+    private func driftDegrees(_ t: TimeInterval) -> Double {
+        guard !reduceMotion, state == .thinking else { return 0 }
+        return turn(t, period: 2.4)
     }
 
-    private func swell(breath: CGFloat, amp: CGFloat) -> CGFloat {
+    private func sweepFraction(_ amp: CGFloat) -> CGFloat {
         switch state {
-        case .idle: 0.88 + breath * 0.12
-        case .listening: 0.94 + breath * 0.08 + amp * 0.24
-        case .thinking: 0.86 + breath * 0.06
-        case .done: 1.06
+        case .idle: 124.0 / 360
+        case .listening: (120 + amp * 210) / 360
+        case .thinking: 108.0 / 360
+        case .done: 1
         }
     }
 
-    /// Light mode needs more ink for the same presence: the canvas is nearly white.
-    private var toneBoost: Double {
-        colorScheme == .dark ? 1 : 1.4
-    }
-
-    private func lit(_ value: Double) -> Double {
-        min(1, value * toneBoost)
-    }
-
-    // Translucent throughout: the canvas reads through every layer.
-    private func hazeOpacity(_ amp: CGFloat) -> Double {
+    private func spillScale(_ amp: CGFloat) -> CGFloat {
         switch state {
-        case .idle: 0.30
-        case .listening: 0.38 + Double(amp) * 0.22
-        case .thinking: 0.32
-        case .done: 0.40
+        case .idle: 0.96
+        case .listening: 1 + amp * 0.16
+        case .thinking: 0.90
+        case .done: 1.10
         }
     }
 
-    private func haloOpacity(_ amp: CGFloat) -> Double {
+    private func spillOpacity(_ amp: CGFloat) -> Double {
         switch state {
-        case .idle: 0.45
-        case .listening: 0.58 + Double(amp) * 0.28
-        case .thinking: 0.50
-        case .done: 0.62
+        case .idle: 0.62
+        case .listening: 0.90 + Double(amp) * 0.10
+        case .thinking: 0.62
+        case .done: 1
         }
     }
 
-    private func coreOpacity(_ amp: CGFloat) -> Double {
+    private func latticeOpacity(_ amp: CGFloat) -> Double {
         switch state {
-        case .idle: 0.55
-        case .listening: 0.68 + Double(amp) * 0.26
-        case .thinking: 0.58
-        case .done: 0.85
+        case .idle: 0.60
+        case .listening: 0.68 + Double(amp) * 0.32
+        case .thinking: 0.55
+        case .done: 0.60
+        }
+    }
+
+    private func beadScale(_ amp: CGFloat) -> CGFloat {
+        switch state {
+        case .idle: 1
+        case .listening: 1 + amp * 0.07
+        case .thinking: 0.90
+        case .done: 1.10
+        }
+    }
+
+    private func veilOpacity(_ amp: CGFloat) -> Double {
+        let veil = colorScheme == .dark ? MurmurColor.irisVeilDark : MurmurColor.irisVeilLight
+        switch state {
+        case .idle: return veil
+        case .listening: return veil * Double(1 - amp)
+        case .thinking: return veil * 1.25
+        case .done: return 0
         }
     }
 
@@ -245,6 +393,31 @@ struct CaptureBloom: View {
         withAnimation(MurmurMotion.animation(.exhale, .instant, reduceMotion: reduceMotion)) {
             coreDip = 1
         }
+    }
+}
+
+/// The rosette: `count` circles of `radius` placed on an orbit of `orbit`, all as unit fractions
+/// of the shape's width. Overlapping strokes make the guilloché.
+struct LatticeShape: Shape {
+    var count: Int
+    var orbit: CGFloat
+    var radius: CGFloat
+
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        let side = min(rect.width, rect.height)
+        let center = CGPoint(x: rect.midX, y: rect.midY)
+        let step = count == 0 ? 1 : count
+        for index in 0..<step {
+            let angle = (CGFloat(index) / CGFloat(step)) * 2 * .pi
+            let dot = CGPoint(
+                x: center.x + orbit * side * cos(angle),
+                y: center.y + orbit * side * sin(angle)
+            )
+            let r = radius * side
+            path.addEllipse(in: CGRect(x: dot.x - r, y: dot.y - r, width: r * 2, height: r * 2))
+        }
+        return path
     }
 }
 

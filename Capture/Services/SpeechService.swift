@@ -68,6 +68,8 @@ final class SpeechService: SpeechServicing {
     private var task: SFSpeechRecognitionTask?
     private var silenceTask: Task<Void, Never>?
     private var watch = SilenceWatch()
+    /// Finalised utterance segments, in order. Joined to form `committedText`.
+    private var accumulator = TranscriptAccumulator()
 
     private(set) var committedText = ""
     private(set) var partialText = ""
@@ -102,6 +104,7 @@ final class SpeechService: SpeechServicing {
         stop()
         committedText = ""
         partialText = ""
+        accumulator.reset()
         watch = SilenceWatch()
         self.recognizer = recognizer
 
@@ -185,10 +188,12 @@ final class SpeechService: SpeechServicing {
         watch.heardVoice(at: Date())
     }
 
+    /// Speech finalises one result per utterance *segment*, and a pause — exactly the pause after
+    /// "then" — starts a new one. Each final carries only its own segment, so these must accumulate;
+    /// assigning would keep the last segment and silently drop everything said before it.
     private func apply(text: String, isFinal: Bool) {
         if isFinal {
-            committedText = text
-            partialText = ""
+            appendSegment(text)
         } else {
             partialText = text
         }
@@ -197,6 +202,12 @@ final class SpeechService: SpeechServicing {
         }
         watch.heardVoice(at: Date())
         onTranscriptChange?()
+    }
+
+    private func appendSegment(_ text: String) {
+        partialText = ""
+        accumulator.append(text)
+        committedText = accumulator.text
     }
 
     /// Tap-to-stop. Promotes any partial the recogniser has not finalised, so ending early never
@@ -210,10 +221,9 @@ final class SpeechService: SpeechServicing {
         stopEngineKeepingTranscript()
     }
 
+    /// The tail segment the recogniser never finalised still belongs to the turn.
     private func commitPartialIfNeeded() {
-        guard committedText.isEmpty else { return }
-        committedText = partialText
-        partialText = ""
+        appendSegment(partialText)
     }
 
     private func startSilenceWatch() {

@@ -79,38 +79,32 @@ struct CaptureView: View {
         }
     }
 
-    /// The well sits dead centre of the free space. Transcript hangs above it and the footnote below,
-    /// both in overlays, so neither can push the well off centre as they appear and disappear.
+    /// Kit `CaptureScreen`: transcript slot, well, footnote — centred as one stack with space-9
+    /// between, and the success bar reserved below.
     private var captureHome: some View {
         VStack(spacing: 0) {
             chrome
-            ZStack {
+            VStack(spacing: MurmurSpace.space9) {
+                heroSlot
                 CaptureBloom(
                     state: bloomState,
                     level: model.state == .listening ? model.listenLevel : 0,
-                    size: 240,
+                    size: 244,
                     label: caption,
                     isInteractive: wellInteractive,
                     onTap: { model.tapWell() }
                 )
                 .allowsHitTesting(wellInteractive)
-
-                VStack(spacing: 0) {
-                    heroSlot
-                    Spacer(minLength: MurmurSpace.space9)
-                }
-
-                VStack(spacing: 0) {
-                    Spacer(minLength: MurmurSpace.space9)
-                    bloomFoot
-                }
-                .animation(
-                    MurmurMotion.animation(.exhale, .normal, reduceMotion: reduceMotion),
-                    value: footHint
-                )
+                bloomFoot
+                    .animation(
+                        MurmurMotion.animation(.exhale, .normal, reduceMotion: reduceMotion),
+                        value: footHint
+                    )
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .padding(.horizontal, MurmurSpace.gutterScreen)
+            // Kit bottom padding plus a deliberate lift, so the well sits above centre.
+            .padding(.bottom, MurmurSpace.space10 + MurmurSpace.space8)
             successSlot
         }
     }
@@ -128,7 +122,12 @@ struct CaptureView: View {
                 showHistory = true
             }
             Spacer(minLength: 0)
-            Wordmark(size: 19, tone: .tertiary, showsDot: false, trackingEm: 0.16)
+            // Kit chrome: 16pt medium, .14em, secondary — not the light wordmark used elsewhere.
+            Text(Wordmark.text)
+                .font(MurmurType.core(size: 16, relativeTo: .headline, weight: .medium))
+                .tracking(16 * 0.14)
+                .foregroundStyle(MurmurColor.textSecondary)
+                .accessibilityAddTraits(.isHeader)
             Spacer(minLength: 0)
             MurmurIconButton(name: .settings, label: "Settings") {
                 showSettings = true
@@ -137,15 +136,25 @@ struct CaptureView: View {
         .padding(.horizontal, MurmurSpace.space4)
     }
 
+    /// The kit's title sits above the well whenever the screen is at rest, not only on first run —
+    /// once a capture is under way the transcript takes the slot.
+    private var showsHeroTitle: Bool {
+        model.showsFirstRun
+            || (model.state == .idle && model.transcriptText.isEmpty && model.speechFact == nil)
+    }
+
     @ViewBuilder
     private var heroSlot: some View {
-        if model.showsFirstRun {
+        if showsHeroTitle {
             Text(CaptureCopy.firstRunTitle)
                 .font(MurmurType.title)
                 .tracking(MurmurType.trackingTitle)
                 .multilineTextAlignment(.center)
                 .foregroundStyle(MurmurColor.textPrimary)
-                .frame(maxWidth: 18 * 16, alignment: .center)
+                // Kit measure is 18ch. On a 393pt screen the gutters set the wrap before this does,
+                // so it is a ceiling for wider devices rather than the break point.
+                .frame(maxWidth: 340, alignment: .center)
+                .fixedSize(horizontal: false, vertical: true)
                 .accessibilityAddTraits(.isHeader)
         } else {
             transcriptSlot
